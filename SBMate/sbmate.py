@@ -4,6 +4,7 @@
 # import collections
 import libsbml
 import networkx as nx
+import numpy as np
 import os
 import pickle
 import re
@@ -11,6 +12,7 @@ import requests
 import constants as cn
 import consistency_score as cs
 import sbml_annotation as sa
+import specificity_score as ss
 
 
 class AnnotationMetrics(object):
@@ -28,7 +30,7 @@ class AnnotationMetrics(object):
     self.annotations = sa.SortedSBMLAnnotation(file=model_file)
     self.annotated_entities, self.coverage = self.getCoverage()
     self.consistent_entities, self.consistency = self.getConsistency(self.annotated_entities)
-    #self.coverage = self.getCoverage()
+    self.specificity = self.getSpecificity(self.consistent_entities)
 
   def getCoverage(self):
     """
@@ -59,29 +61,48 @@ class AnnotationMetrics(object):
     :return str-list/None: return None if no object is annotated
     :return float/None: return None if no object is annotated
     """
-    # get annotated entities
-    consistent_entities = []
-    # k is the name of each model entity
-    for k in annotated_entities:
-      entity_annotation = self.annotations.annotations[k]
-      entity_type = entity_annotation['object_type']
-      annotated_knowledge_resources = [ont \
-                                       for ont in cn.KNOWLEDGE_TYPES_REP \
-                                       if entity_annotation[ont]]
-      # By setup, annotated_knowledge_resources should have at least one item
-      is_consistent_list = [cs.CONSISTENT_FUNC[one_ont](entity_annotation[one_ont], entity_type) \
-                            for one_ont in annotated_knowledge_resources]
-      if all(is_consistent_list):
-        consistent_entities.append(k) 
-    # if there is at least one annotated entity, return intended values
     if annotated_entities:
+      consistent_entities = []
+      # k is the name of each model entity
+      for k in annotated_entities:
+        entity_annotation = self.annotations.annotations[k]
+        entity_type = entity_annotation['object_type']
+        annotated_knowledge_resources = [ont \
+                                         for ont in cn.KNOWLEDGE_TYPES_REP \
+                                         if entity_annotation[ont]]
+        # By setup, annotated_knowledge_resources should have at least one item
+        is_consistent_list = [cs.CONSISTENCY_FUNC[one_ont](entity_annotation[one_ont], entity_type) \
+                              for one_ont in annotated_knowledge_resources]
+        if all(is_consistent_list):
+          consistent_entities.append(k) 
+      # if there is at least one annotated entity, return intended values
       return consistent_entities, float(len(consistent_entities) / len(annotated_entities))
     # else happens if no object is annotated
     else: 
       return None, None
 
-
-
+  def getSpecificity(self, consistent_entities):
+    """
+    Specificity is defined as:
+    log2(num_ancestors/num_all_nodes) / log2(1/num_all_nodes)
+    'consistent_entities' is a list of consistent model entities. 
+    :param str-list consistent_entities:
+    :return float/None: return None if no object is consistent
+    """
+    specificity_score = []
+    if consistent_entities:
+      # k is the name of a consistent model entity
+      for k in consistent_entities:
+        entity_annotation = self.annotations.annotations[k]
+        consistent_knowledge_resources = [ont \
+                                         for ont in cn.KNOWLEDGE_TYPES_REP \
+                                         if entity_annotation[ont]]
+        entity_specificity = [ss.SPECIFICITY_FUNC[one_ont](entity_annotation[one_ont]) \
+                              for one_ont in consistent_knowledge_resources]
+        specificity_score.append(np.mean(entity_specificity))
+      return np.mean(specificity_score)
+    else:
+      return None
 
 
 
