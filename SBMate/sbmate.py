@@ -1,12 +1,12 @@
 # sbmate.py
 # calculate annotation scores
 
-# import collections
 import libsbml
 import networkx as nx
 import numpy as np
 import os
 import pickle
+import pandas as pd
 import re
 import requests
 import constants as cn
@@ -105,11 +105,35 @@ class AnnotationMetrics(object):
       return None
 
 
-
-
-
-
-
+def getMetrics(file, output="report"):
+  """
+  Using the AnnotationMetrics class,
+  produces report on the three metrics.
+  :param str file: address of model file (.xml)
+  :param str output: output type ("report" or "table")
+  :return str: or DataFrame?
+  """
+  metrics_class = AnnotationMetrics(model_file=file)
+  if output=="report":
+    res = ""
+    res = res + "Model has total %d annotatable entities.\n" % \
+                      len(metrics_class.annotations.annotations)
+    res = res + "%d entities are annotated.\n" % len(metrics_class.annotated_entities)
+    res = res + "%d entities are consistent.\n" % len(metrics_class.consistent_entities)
+    res = res + "...\n"
+    res = res + "Coverage is: {:.2f}\n".format(metrics_class.coverage) 
+    res = res + "Consistency is: {:.2f}\n".format(metrics_class.consistency) 
+    res = res + "Specificity is: {:.2f}\n".format(metrics_class.specificity) 
+  elif output=="table":
+    res_dict = {"num_annotatable_entities":[len(metrics_class.annotations.annotations)],
+                "num_annotated_entities":[len(metrics_class.annotated_entities)],
+                "num_consistent_entities":[len(metrics_class.consistent_entities)],
+                "coverage":["{:.2f}".format(metrics_class.coverage)],
+                "consistency":["{:.2f}".format(metrics_class.consistency)],
+                "specificity":["{:.2f}".format(metrics_class.specificity)],
+                }
+    res = pd.DataFrame(res_dict)
+  return res
 
 
 
