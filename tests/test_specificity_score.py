@@ -7,9 +7,11 @@ python -m unittest test_specificity_score
 
 import libsbml
 import os
+import sys
+sys.path.append(os.path.join(os.getcwd(), '../'))
 import unittest
-import consistency_score as cs
-import specificity_score as ss
+from SBMate import consistency_score as cs
+from SBMate import specificity_score as ss
 
 class TestSpecificityScore(unittest.TestCase):
   

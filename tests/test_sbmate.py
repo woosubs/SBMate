@@ -4,11 +4,17 @@
 
 import libsbml
 import numpy as np
+import os
+import sys
+sys.path.append(os.path.join(os.getcwd(), '../'))
 import unittest
-import constants as cn
-import sbmate
+from SBMate import constants as cn
+from SBMate import sbmate
 
 BIOMD_12 = 'BIOMD0000000012.xml'
+RESULT_REPORT = "Model has total 20 annotatable entities.\n20 " + \
+                "entities are annotated.\n19 entities are consistent." +\
+                "\n...\nCoverage is: 1.00\nConsistency is: 0.95\nSpecificity is: 0.88\n"
 
 class TestSBMate(unittest.TestCase):
 
@@ -30,3 +36,14 @@ class TestSBMate(unittest.TestCase):
   def testGetSpecificity(self):
   	specificity = self.metrics_class.getSpecificity(self.metrics_class.consistent_entities)
   	self.assertEqual(np.round(specificity, 2),0.88)
+
+
+class TestFunctions(unittest.TestCase):
+
+  def setUp(self):
+    self.res_report = sbmate.getMetrics(BIOMD_12, output="report")
+    self.res_df = sbmate.getMetrics(BIOMD_12, output="table")
+
+  def testGetMetrics(self):
+    self.assertEqual(self.res_report, RESULT_REPORT)
+    self.assertEqual(self.res_df.shape, (1,6))

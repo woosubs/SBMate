@@ -17,11 +17,6 @@ import requests
 from SBMate import constants as cn
 from SBMate import consistency_score as cs
 
-# # Load ontology graphs
-# SBO_G = nx.read_gpickle(os.path.join(cn.DATA_DIR, "sbo_graph.gpickle"))
-# CHEBI_G = nx.read_gpickle(os.path.join(cn.DATA_DIR, "chebi_graph.gpickle"))
-# GO_G = nx.read_gpickle(os.path.join(cn.DATA_DIR, "go_graph.gpickle"))
-
 
 def getOneSBOSpecificity(one_term):
   """
