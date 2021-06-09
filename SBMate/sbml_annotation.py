@@ -4,7 +4,7 @@ import collections
 import libsbml
 import os
 import re
-import constants as cn
+from SBMate import constants as cn
 
 ObjectAnnotation = collections.namedtuple('ObjectAnnotation',
                                         ['id', 'object_type', 'annotation'],

@@ -14,8 +14,8 @@ import os
 import pickle
 import re
 import requests
-import constants as cn
-import consistency_score as cs
+from SBMate import constants as cn
+from SBMate import consistency_score as cs
 
 # # Load ontology graphs
 # SBO_G = nx.read_gpickle(os.path.join(cn.DATA_DIR, "sbo_graph.gpickle"))

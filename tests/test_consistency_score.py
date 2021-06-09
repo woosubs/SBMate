@@ -7,8 +7,10 @@ python -m unittest test_consistency_score
 
 import libsbml
 import os
+import sys
+sys.path.append(os.path.join(os.getcwd(), '../'))
 import unittest
-import consistency_score as cs
+from SBMate import consistency_score as cs
 
 class TestConsistencyScore(unittest.TestCase):
 
@@ -35,6 +37,8 @@ class TestConsistencyScore(unittest.TestCase):
   def testIsGOConsistent(self):
     # a molecular function term with libsbml.Reaction
     self.assertTrue(cs.isGOConsistent('GO:0004708', libsbml.Reaction))
+    # same as above, but input as a list
+    self.assertTrue(cs.isGOConsistent(['GO:0004708'], libsbml.Reaction))
     # a biological process term with libsbml.Model
     self.assertTrue(cs.isGOConsistent('GO:0035556', libsbml.Model))
     # a cellular component term with libsbml.Compartment
@@ -43,8 +47,10 @@ class TestConsistencyScore(unittest.TestCase):
     self.assertTrue(cs.isGOConsistent('GO:0005794', libsbml.Species))
 
   def testIsSBOConsistent(self):
-    # Similar to above
+    # Similar to testIsGOConsistent
     self.assertTrue(cs.isSBOConsistent('SBO:0000375', libsbml.Reaction))
+    # same as above, but input is a list
+    self.assertTrue(cs.isSBOConsistent(['SBO:0000375'], libsbml.Reaction))
     self.assertTrue(cs.isSBOConsistent('SBO:0000374', libsbml.Model))
     self.assertTrue(cs.isSBOConsistent('SBO:0000284', libsbml.Compartment))
     self.assertTrue(cs.isSBOConsistent(['SBO:0000241'], libsbml.Species))
@@ -56,15 +62,20 @@ class TestConsistencyScore(unittest.TestCase):
     self.assertFalse(cs.isCHEBIConsistent('CHEBI:28087', libsbml.Reaction))
     # Species can have a correct CHEBI term
     self.assertTrue(cs.isCHEBIConsistent('CHEBI:28087', libsbml.Species))
+    # input as a list
+    self.assertTrue(cs.isCHEBIConsistent(['CHEBI:28087'], libsbml.Species))
 
   def testIsUNIPROTConsistent(self):
     self.assertFalse(cs.isUNIPROTConsistent('GO:0035556', libsbml.Reaction))
     self.assertFalse(cs.isUNIPROTConsistent('P0DP23', libsbml.Compartment))
     self.assertTrue(cs.isUNIPROTConsistent(['P0DP23'], libsbml.Species))
     self.assertFalse(cs.isUNIPROTConsistent(['P0DP23', 'C94967'], libsbml.Species))
+    self.assertFalse(cs.isUNIPROTConsistent(3.96, libsbml.Species))
 
   def testIsKEGGSpeciesConsistent(self):
     # normally expected case
+    self.assertTrue(cs.isKEGGSpeciesConsistent('C00062', libsbml.Species))
+    # input as a list
     self.assertTrue(cs.isKEGGSpeciesConsistent(['C00062'], libsbml.Species))
     # compartment should not be a KEGG species term
     self.assertFalse(cs.isKEGGSpeciesConsistent(['C00062'], libsbml.Compartment))
@@ -75,6 +86,8 @@ class TestConsistencyScore(unittest.TestCase):
     # normally expected case
     self.assertFalse(cs.isKEGGProcessConsistent(['C00062'], libsbml.Species))
     # compartment should not be a KEGG species term
+    self.assertTrue(cs.isKEGGProcessConsistent('ko00061', libsbml.Model))
+    # input as a list
     self.assertTrue(cs.isKEGGProcessConsistent(['ko00061'], libsbml.Model))
     # GO term is not a KEGG term, should be rejected
     self.assertTrue(cs.isKEGGProcessConsistent(['R00259'], libsbml.Reaction))
