@@ -3,12 +3,14 @@
 # python -m unittest test_sbml_annotation
 
 import libsbml
+import os
 import unittest
-import constants as cn
-import sbml_annotation as sa
+import sys
+sys.path.append(os.path.join(os.getcwd(), '../'))
+from SBMate import constants as cn
+from SBMate import sbml_annotation as sa
 
 BIOMD_12 = 'BIOMD0000000012.xml'
-
 
 class TestRawSBMLAnnotation(unittest.TestCase):
 

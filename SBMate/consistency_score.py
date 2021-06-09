@@ -13,7 +13,7 @@ import os
 import pickle
 import re
 import requests
-import constants as cn
+from SBMate import constants as cn
 
 # Load ontology graphs
 SBO_G = nx.read_gpickle(os.path.join(cn.DATA_DIR, "sbo_graph.gpickle"))
@@ -156,6 +156,8 @@ def isUNIPROTConsistent(inp_uniprot, inp_type):
     inp_list = [inp_uniprot]
   elif isinstance(inp_uniprot, list):
     inp_list = inp_uniprot
+  else:
+    return False
   if inp_type in [cn.SPECIES]:
     try:
       request_res = []
@@ -171,35 +173,68 @@ def isUNIPROTConsistent(inp_uniprot, inp_type):
   else:
     return False
 
-def isKECC_SPECIESConsistent(inp_kecc_species, inp_type):
+def isKEGGSpeciesConsistent(inp_kegg_species, inp_type):
   """
-  Briefly check if object type is appropriate. 
+  Briefly check if object type is cn.SPECIES.
+  Then, checks if KEGG url can be accessed 
+  without generating 'No such data was found.'
   :param str/list-str inp_chebi:
   :param libsbml.AutoProperty inp_type:
   :return bool:
   """
-  if inp_type in [cn.SPECIES, cn.COMPARTMENT]:
-    return True
+  if isinstance(inp_kegg_species, str):
+    inp_list = [inp_kegg_species]
+  elif isinstance(inp_kegg_species, list):
+    inp_list = inp_kegg_species
+  if inp_type in [cn.SPECIES]:
+    request_res = []
+    for one_kegg in inp_list:
+      r = requests.get('https://www.genome.jp/entry/' + one_kegg)
+      if 'No such data was found' in r.text:
+        request_res.append(False)
+      else:
+        request_res.append(True)
+    if False in request_res:
+      return False
+    else:
+      return True
   else:
     return False
 
-def isKECC_PROCESSConsistent(inp_process, inp_type, kecc_process_g=None):
+def isKEGGProcessConsistent(inp_kegg_process, inp_type):
   """
-  Briefly check if object type is appropriate. 
+  Briefly check if object type is appropriate,
+  meaning bqbiol:is(VersionOf) Reaction or Model.
+  Then, checks if KEGG url can be accessed 
+  without generating 'No such data was found.'
   :param str/list-str inp_chebi:
   :param libsbml.AutoProperty inp_type:
   :return bool:
   """
+  if isinstance(inp_kegg_process, str):
+    inp_list = [inp_kegg_process]
+  elif isinstance(inp_kegg_process, list):
+    inp_list = inp_kegg_process
   if inp_type in [cn.MODEL, cn.REACTION]:
-    return True
+    request_res = []
+    for one_kegg in inp_list:
+      r = requests.get('https://www.genome.jp/entry/' + one_kegg)
+      if 'No such data was found' in r.text:
+        request_res.append(False)
+      else:
+        request_res.append(True)
+    if False in request_res:
+      return False
+    else:
+      return True
   else:
     return False
 
 
-CONSISTENT_FUNC = {'go':isGOConsistent, 
-                   'sbo': isSBOConsistent,
-                   'chebi': isCHEBIConsistent,
-                   'kegg_species': isKECC_SPECIESConsistent,
-                   'kegg_process': isKECC_PROCESSConsistent,
-                   'uniprot': isUNIPROTConsistent}
+CONSISTENCY_FUNC = {'go':isGOConsistent, 
+                    'sbo': isSBOConsistent,
+                    'chebi': isCHEBIConsistent,
+                    'kegg_species': isKEGGSpeciesConsistent,
+                    'kegg_process': isKEGGProcessConsistent,
+                    'uniprot': isUNIPROTConsistent}
 
