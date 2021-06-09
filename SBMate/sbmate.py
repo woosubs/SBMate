@@ -9,11 +9,10 @@ import pickle
 import pandas as pd
 import re
 import requests
-import constants as cn
-import consistency_score as cs
-import sbml_annotation as sa
-import specificity_score as ss
-
+from SBMate import constants as cn
+from SBMate import consistency_score as cs
+from SBMate import sbml_annotation as sa
+from SBMate import specificity_score as ss
 
 class AnnotationMetrics(object):
   """
