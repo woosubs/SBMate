@@ -8,7 +8,7 @@ python -m unittest test_consistency_score
 import libsbml
 import os
 import sys
-sys.path.append(os.path.join(os.getcwd(), '../'))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import unittest
 from SBMate import consistency_score as cs
 
@@ -93,16 +93,7 @@ class TestConsistencyScore(unittest.TestCase):
     self.assertTrue(cs.isKEGGProcessConsistent(['R00259'], libsbml.Reaction))
 
 
-
-
-
-
-
-
-
-
-
-
-
+if __name__ == '__main__':
+  unittest.main()
 
 

@@ -16,9 +16,9 @@ import requests
 from SBMate import constants as cn
 
 # Load ontology graphs
-SBO_G = nx.read_gpickle(os.path.join(cn.DATA_DIR, "sbo_graph.gpickle"))
-CHEBI_G = nx.read_gpickle(os.path.join(cn.DATA_DIR, "chebi_graph.gpickle"))
-GO_G = nx.read_gpickle(os.path.join(cn.DATA_DIR, "go_graph.gpickle"))
+SBO_G = nx.read_gpickle(os.path.join(cn.RESOURCE_DIR, "sbo_graph.gpickle"))
+CHEBI_G = nx.read_gpickle(os.path.join(cn.RESOURCE_DIR, "chebi_graph.gpickle"))
+GO_G = nx.read_gpickle(os.path.join(cn.RESOURCE_DIR, "go_graph.gpickle"))
 
 
 def findGORoot(inp_go_term):

@@ -1,0 +1,12 @@
+language: python
+
+install:
+    - pip install networkx
+    - pip install nose
+    - pip install numpy
+    - pip install pandas
+    - pip install python-libsbml
+
+script:
+  # Run the tests
+  - cd ..; nosetests SBMLLint/tests

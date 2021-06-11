@@ -6,7 +6,7 @@ import libsbml
 import numpy as np
 import os
 import sys
-sys.path.append(os.path.join(os.getcwd(), '../'))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import unittest
 from SBMate import constants as cn
 from SBMate import sbmate
@@ -19,7 +19,7 @@ RESULT_REPORT = "Model has total 20 annotatable entities.\n20 " + \
 class TestSBMate(unittest.TestCase):
 
   def setUp(self):	
-    self.metrics_class = sbmate.AnnotationMetrics(model_file=BIOMD_12)
+    self.metrics_class = sbmate.AnnotationMetrics(model_file=os.path.join(cn.TEST_DIR, BIOMD_12))
 
   def testGetCoverage(self):
   	anot_entities, coverage = self.metrics_class.getCoverage()
@@ -41,9 +41,13 @@ class TestSBMate(unittest.TestCase):
 class TestFunctions(unittest.TestCase):
 
   def setUp(self):
-    self.res_report = sbmate.getMetrics(BIOMD_12, output="report")
-    self.res_df = sbmate.getMetrics(BIOMD_12, output="table")
+    self.res_report = sbmate.getMetrics(os.path.join(cn.TEST_DIR, BIOMD_12), output="report")
+    self.res_df = sbmate.getMetrics(os.path.join(cn.TEST_DIR, BIOMD_12), output="table")
 
   def testGetMetrics(self):
     self.assertEqual(self.res_report, RESULT_REPORT)
     self.assertEqual(self.res_df.shape, (1,6))
+
+
+if __name__ == '__main__':
+  unittest.main()

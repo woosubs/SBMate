@@ -8,7 +8,7 @@ python -m unittest test_specificity_score
 import libsbml
 import os
 import sys
-sys.path.append(os.path.join(os.getcwd(), '../'))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import unittest
 from SBMate import consistency_score as cs
 from SBMate import specificity_score as ss
@@ -56,3 +56,8 @@ class TestSpecificityScore(unittest.TestCase):
   def testGetOthersSpecificity(self):
     self.assertEqual(ss.getOthersSpecificity(['P0DP23']), 1.0)
     self.assertEqual(ss.getOthersSpecificity('C00062'), 1.0)
+
+
+if __name__ == '__main__':
+  unittest.main()
+
