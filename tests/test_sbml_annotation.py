@@ -6,19 +6,22 @@ import libsbml
 import os
 import unittest
 import sys
-sys.path.append(os.path.join(os.getcwd(), '../'))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+print(sys.path)
 from SBMate import constants as cn
 from SBMate import sbml_annotation as sa
 
 BIOMD_12 = 'BIOMD0000000012.xml'
+# k = sa.RawSBMLAnnotation(input_file=os.path.join(cn.TEST_DIR, BIOMD_12))
+# print(k.sbo)
 
 class TestRawSBMLAnnotation(unittest.TestCase):
 
   def setUp(self):	
     reader = libsbml.SBMLReader()
-    document = reader.readSBML(BIOMD_12)
+    document = reader.readSBML(os.path.join(cn.TEST_DIR, BIOMD_12))
     self.sbml_model = document.getModel()
-    self.raw_sbml_annotation = sa.RawSBMLAnnotation(input_file=BIOMD_12)
+    self.raw_sbml_annotation = sa.RawSBMLAnnotation(input_file=os.path.join(cn.TEST_DIR, BIOMD_12))
 
   def testGetSBOAnnotation(self):
   	# testing annotations obtained from sbo_term
@@ -49,7 +52,7 @@ class TestRawSBMLAnnotation(unittest.TestCase):
 class TestSortedSBMLAnnotation(unittest.TestCase):
 
   def setUp(self):
-    self.sbml_annotation = sa.SortedSBMLAnnotation(file=BIOMD_12)
+    self.sbml_annotation = sa.SortedSBMLAnnotation(file=os.path.join(cn.TEST_DIR, BIOMD_12))
     self.input_annotation = '<bqbiol:isVersionOf>\n  <rdf:Bag>\n    <rdf:li rdf:resource="http://identifiers.org/obo.go/GO:0006402"/>\n  </rdf:Bag>\n</bqbiol:isVersionOf>'
 
   def testGetAnnotationDict(self):
@@ -72,7 +75,8 @@ class TestSortedSBMLAnnotation(unittest.TestCase):
     self.assertTrue(self.sbml_annotation.getKnowledgeResourceTuple(None) is None)
 
 
-
+if __name__ == '__main__':
+  unittest.main()
 
 
 

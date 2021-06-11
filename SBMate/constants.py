@@ -6,10 +6,18 @@ Constants for modlues
 import libsbml
 import os
 
+PROJECT_NAME = "SBMate"
+
 # folders
-BASE_DIR = '/Users/woosubs/Desktop/AutomateAnnotation'
-DATA_DIR = os.path.join(BASE_DIR, "DATA")
-BIOMODEL_DIR = os.path.join(DATA_DIR, "biomodels/curated_biomodels_31mar2021")
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+# one level higher
+PROJECT_DIR = os.path.dirname(PROJECT_DIR)
+# for _ in range(2):
+#   PROJECT_DIR = os.path.dirname(PROJECT_DIR)
+# BASE_DIR = '/Users/woosubs/Desktop/AutomateAnnotation'
+RESOURCE_DIR = os.path.join(PROJECT_DIR, "knowledge_resources")
+TEST_DIR = os.path.join(PROJECT_DIR, "tests")
+# BIOMODEL_DIR = os.path.join(DATA_DIR, "biomodels/curated_biomodels_31mar2021")
 
 
 # model types
