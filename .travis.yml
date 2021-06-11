@@ -10,3 +10,8 @@ install:
 script:
   # Run the tests
   - cd ..; nosetests SBMLLint/tests
+
+branches:
+  only:
+  - main
+  - continuous_integration
