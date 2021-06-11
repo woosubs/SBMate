@@ -6,6 +6,7 @@ install:
     - pip install numpy
     - pip install pandas
     - pip install python-libsbml
+    - pip install requests
 
 script:
   # Run the tests
