@@ -16,6 +16,12 @@ import re
 import requests
 from SBMate import constants as cn
 
+ONT_TO_URL: {"uniprot":"https://www.genome.jp/entry/",
+           "kegg_process":"https://www.genome.jp/entry/",
+           "kegg_species":"https://www.genome.jp/entry/",
+           }
+KEGG_ERROR_MESSAGE: "No such data was found"
+
 
 class NonDAGAnalyzer(object):
   """
@@ -33,4 +39,11 @@ class NonDAGAnalyzer(object):
     self.term_id = term_id
     self.ontology = ontology
     self.object_type = object_type
-    
+
+  def getOneTermConsistency(self, one_term):
+    """
+    Get consistency of one term,
+    by connecting to the url
+    :param str one_term:
+    :return float:
+    """
