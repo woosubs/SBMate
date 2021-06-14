@@ -76,7 +76,7 @@ def isGOConsistent(inp_go, inp_type):
   else:
     return False
   go_pars = [findGORoot(go_term) for go_term in inp_list]
-  go_type = set(["go:"+go_ancestor_map[ele] for ele in go_pars])
+  go_type = set([go_ancestor_map[ele] for ele in go_pars])
   go_valid_type = cn.OBJECT_ONT_MAP_FILT[inp_type]
   if go_type <= go_valid_type:
     return True

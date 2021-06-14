@@ -44,7 +44,6 @@ def getSBOSpecificity(inp_term):
   	inp_list = inp_term
   return np.mean([getOneSBOSpecificity(val) for val in inp_list])
 
-
 def getOneGOSpecificity(one_term):
   """
   Get specificity score for one GO term

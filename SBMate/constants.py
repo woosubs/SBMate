@@ -12,15 +12,11 @@ PROJECT_NAME = "SBMate"
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 # one level higher
 PROJECT_DIR = os.path.dirname(PROJECT_DIR)
-# for _ in range(2):
-#   PROJECT_DIR = os.path.dirname(PROJECT_DIR)
-# BASE_DIR = '/Users/woosubs/Desktop/AutomateAnnotation'
 RESOURCE_DIR = os.path.join(PROJECT_DIR, "knowledge_resources")
 TEST_DIR = os.path.join(PROJECT_DIR, "tests")
-# BIOMODEL_DIR = os.path.join(DATA_DIR, "biomodels/curated_biomodels_31mar2021")
 
 
-# model types
+# Model entity types
 MODEL = libsbml.Model
 REACTION = libsbml.Reaction
 SPECIES = libsbml.Species
@@ -32,7 +28,7 @@ CELL_COMP = 'cellular_component'
 GO_BIO_PROC = "GO:0008150"
 GO_MOL_FUNC = "GO:0003674"
 GO_CELL_COMP = "GO:0005575"
-GO_PARENTS = [GO_BIO_PROC, GO_MOL_FUNC, GO_CELL_COMP]
+# GO_PARENTS = [GO_BIO_PROC, GO_MOL_FUNC, GO_CELL_COMP]
 GO_ROOTS = [GO_BIO_PROC, GO_MOL_FUNC, GO_CELL_COMP]
 
 BIOMODEL_OBJECTS = [MODEL,
@@ -44,6 +40,11 @@ OBJECT_GO_MAP = {MODEL: {BIOL_PROC, MOLE_FUNC},
                  REACTION: {BIOL_PROC, MOLE_FUNC},
                  SPECIES: {CELL_COMP},
                  COMPARTMENT: {CELL_COMP},
+                }
+GO_ROOT_DICT = {GO_BIO_PROC: BIOL_PROC,
+                GO_MOL_FUNC: MOLE_FUNC,
+                GO_CELL_COMP: CELL_COMP,
+                None: "None"
                 }
 
 # Knowledge resource identifiers for URI
@@ -81,23 +82,26 @@ ALL_KNOWLEDGE_TERMS = {'go':GOS,
 					   'uniprot': UNIPROTS,
 					   }
 # items are a set - union of multiple sets
-OBJECT_ONT_MAP_RAW = {MODEL: set.union(*[GOS, SBOS, KEGG_PROC]),
-                      REACTION: set.union(*[GOS, SBOS, KEGG_PROC]),
-                      SPECIES: set.union(*[KEGG_SPEC, UNIPROTS]),
-                      COMPARTMENT: set.union(*[KEGG_SPEC, UNIPROTS]),
-                     }
+# OBJECT_ONT_MAP_RAW = {MODEL: set.union(*[GOS, SBOS, KEGG_PROC]),
+#                       REACTION: set.union(*[GOS, SBOS, KEGG_PROC]),
+#                       SPECIES: set.union(*[KEGG_SPEC, UNIPROTS]),
+#                       COMPARTMENT: set.union(*[KEGG_SPEC, UNIPROTS]),
+#                      }
 
 # physical entity.. and occuring entity.. is from SBO
 
-PROCESS_TERMS = {'go:biological_process', 'go:molecular_function',
+PROCESS_ROOTS = {'biological_process', 'molecular_function',
                  'kegg_process', 'occurring entity representation'}
-COMPONENT_TERMS = {'go:cellular_component', 'kegg_species', 'chebi',
-                   'uniprot', 'physical entity representation'}            
+# COMPONENT_TERMS = {'cellular_component', 'kegg_species', 'chemical entity',
+#                    'uniprot', 'physical entity representation'}
+SPECIES_ROOTS = {'cellular_component', 'kegg_species', 'chemical entity',
+                   'uniprot', 'physical entity representation'}
+COMPARTMENT_ROOTS = {'cellular_component', 'physical entity representation'}            
 # when konwledge resources were mapped to KNOWLEDGE_TYPES_REP
-OBJECT_ONT_MAP_FILT = {MODEL: PROCESS_TERMS,
-                      REACTION: PROCESS_TERMS,
-                      SPECIES: COMPONENT_TERMS,
-                      COMPARTMENT: COMPONENT_TERMS,
+OBJECT_ONT_MAP_FILT = {MODEL: PROCESS_ROOTS,
+                       REACTION: PROCESS_ROOTS,
+                       SPECIES: SPECIES_ROOTS,
+                       COMPARTMENT: COMPARTMENT_ROOTS,
                       }
 
 
@@ -111,14 +115,10 @@ PART_ROLE = 'SBO:0000003'
 PHYSICAL_ENT = 'SBO:0000236'
 SYS_PARAM = 'SBO:0000545'
 
-# SBO_PAR_LIST = [MATH_EXP, META_REP,
-#                 MODEL_FRAME, ENTITY_REP,
-#                 PART_ROLE, PHYSICAL_ENT,
-#                 SYS_PARAM]
 SBO_ROOTS = [MATH_EXP, META_REP,
-                MODEL_FRAME, ENTITY_REP,
-                PART_ROLE, PHYSICAL_ENT,
-                SYS_PARAM]
+             MODEL_FRAME, ENTITY_REP,
+             PART_ROLE, PHYSICAL_ENT,
+             SYS_PARAM]
 
 SBO_ROOT_DICT = {MATH_EXP:'mathematical expression',
                 META_REP:'metadata representation',
@@ -126,12 +126,23 @@ SBO_ROOT_DICT = {MATH_EXP:'mathematical expression',
                 ENTITY_REP:'occurring entity representation',
                 PART_ROLE:'participant role',
                 PHYSICAL_ENT:'physical entity representation',
-                SYS_PARAM:'systems description parameter'}
+                SYS_PARAM:'systems description parameter',
+                None: "None"
+                }
 
 
 
+# CHEBI terms
+CHEMICAL_ENTITY = "CHEBI:24431"
+CHEBI_ROOTS = [CHEMICAL_ENTITY]
+CHEBI_ROOT_DICT = {CHEMICAL_ENTITY: "chemical entity",
+                   None: "None"
+                   }
 
-
+# DAG ontologies (GO, SBO, CHEBI)
+DAG_ROOT_MAP = {"go":GO_ROOT_DICT,
+                "sbo":SBO_ROOT_DICT, 
+                "chebi":CHEBI_ROOT_DICT}
 
 
 
