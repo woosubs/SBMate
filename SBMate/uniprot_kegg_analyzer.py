@@ -16,6 +16,7 @@ import re
 import requests
 from SBMate import constants as cn
 
+
 ONT_TO_URL: {"uniprot":"https://www.genome.jp/entry/",
            "kegg_process":"https://www.genome.jp/entry/",
            "kegg_species":"https://www.genome.jp/entry/",
@@ -72,15 +73,6 @@ class NonDAGAnalyzer(object):
     else:
       return False
     # next, check consistency
-
-
-
-
-
-
-
-
-
 
 
 
