@@ -52,6 +52,7 @@ class TestDAGAnalyzer(unittest.TestCase):
     self.assertEqual(np.round(dummy_analyzer2.getSpecificity(['GO:0006402']), 2), 0.67)
     self.assertEqual(dummy_analyzer2.getSpecificity(['GO:0006402', 'SBO:12345']), None)
 
+
 if __name__ == '__main__':
   unittest.main()
 

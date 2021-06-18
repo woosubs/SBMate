@@ -99,7 +99,3 @@ class NonDAGAnalyzer(object):
       return float(1.0)
 
 
-
-
-
-
