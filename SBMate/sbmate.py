@@ -25,6 +25,7 @@ class AnnotationMetrics(object):
   def __init__(self, model_file):
     """
     :param str model_file: address/name of the .xml model file
+    (explain more on consistency, specificity etc.)
     """
     self.annotations = sa.SortedSBMLAnnotation(file=model_file)
     self.annotated_entities, self.coverage = self.getCoverage()
