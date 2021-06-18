@@ -6,8 +6,7 @@ import libsbml
 import os
 import unittest
 import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-print(sys.path)
+# sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from SBMate import constants as cn
 from SBMate import sbml_annotation as sa
 

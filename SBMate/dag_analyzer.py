@@ -34,6 +34,7 @@ class DAGAnalyzer(object):
                object_type):
     """
     param: str/list term_id: identifier to analyze
+                             should be in sbml_annotation format
     param: str ontology: one of "go", "sbo", and "chebi"
     param: libsbml.AutoProperty object_type: 
            one of model entity types, e.g., libsbml.Species
@@ -44,7 +45,6 @@ class DAGAnalyzer(object):
     self.dag = ONT_TO_G[self.ontology]
     self.possible_roots = ONT_TO_ROOT[self.ontology]
     self.term_to_root = None
-    # self.the_root = self.findRoot(inp_term=self.term_id)
     self.consistent = self.getConsistency(inp_term=self.term_id)
 
   def findRoot(self, inp_term):

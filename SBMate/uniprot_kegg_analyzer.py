@@ -17,11 +17,11 @@ import requests
 from SBMate import constants as cn
 
 
-ONT_TO_URL: {"uniprot":"https://www.genome.jp/entry/",
-           "kegg_process":"https://www.genome.jp/entry/",
-           "kegg_species":"https://www.genome.jp/entry/",
-           }
-KEGG_ERROR_MESSAGE: "No such data was found"
+ONT_TO_URL= {"uniprot":"https://www.uniprot.org/uniprot/",
+             "kegg_process":"https://www.genome.jp/entry/",
+             "kegg_species":"https://www.genome.jp/entry/",
+            }
+KEGG_ERROR_MESSAGE = "No such data was found"
 
 
 class NonDAGAnalyzer(object):
@@ -40,7 +40,8 @@ class NonDAGAnalyzer(object):
     self.term_id = term_id
     self.ontology = ontology
     self.object_type = object_type
-    self.consistency = None
+    self.consistent = self.getConsistency(inp_term=self.term_id)
+
 
   def getOneTermConsistency(self, one_term):
     """
@@ -57,10 +58,12 @@ class NonDAGAnalyzer(object):
       return r.ok
 
   def getConsistency(self, inp_term):
-  	"""
-  	Using getOneTermConsistency(),
-  	check if the terms are consistent.
-  	"""
+    """
+    Using getOneTermConsistency(),
+    check if the terms are consistent.
+    :param str/list inp_term:
+    :return bool:
+    """
     # first, check if the input term is in correct format
     if isinstance(inp_term, str):
       inp_list = [inp_term]
@@ -69,10 +72,42 @@ class NonDAGAnalyzer(object):
       if sum([isinstance(t, str) for t in inp_term])==len(inp_term):
         inp_list = inp_term
       else:
-      	return False
+        return False
     else:
       return False
-    # next, check consistency
+    # second, check if the object type and ontology match
+    if not self.ontology in cn.OBJECT_ONT_MAP_FILT[self.object_type]:
+      return False
+    # finally, query the term and get consistency
+    res = [self.getOneTermConsistency(t) for t in inp_list]
+    if all(res):
+      return True
+    else:
+      return False
+
+  def getSpecificity(self, inp_term):
+    """
+    Get specificity score of one or more terms.
+    Specificity is 1 for uniprot and KEGG, 
+    as long as the therms are consistent.
+    :param str/str-list inp_term:
+    :return float: if consistent, assign 1.0
+    """
+    if not self.consistent:
+      return None
+    else:
+      return float(1.0)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
