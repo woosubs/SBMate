@@ -51,7 +51,7 @@ class NonDAGAnalyzer(object):
     :return bool:
     """
     r = requests.get(ONT_TO_URL[self.ontology]+one_term)
-    # for kegg, needs to check whether the text is in the page
+    # for kegg, needs to check whether the text below is in the page
     if KEGG_ERROR_MESSAGE in r.text:
       return False
     else:
@@ -97,15 +97,6 @@ class NonDAGAnalyzer(object):
       return None
     else:
       return float(1.0)
-
-
-
-
-
-
-
-
-
 
 
 
