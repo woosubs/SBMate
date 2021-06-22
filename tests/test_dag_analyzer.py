@@ -18,8 +18,8 @@ class TestDAGAnalyzer(unittest.TestCase):
     self.sbml_annotation = sa.SortedSBMLAnnotation(file=os.path.join(cn.TEST_DIR, BIOMD_12))
     self.reaction1_annotation = self.sbml_annotation.annotations['Reaction1']
     self.reaction1_analyzer = da.DAGAnalyzer(term_id=['GO:0006402'],
-    	                                     ontology='go',
-    	                                     object_type=libsbml.Reaction)
+    	                                       ontology='go',
+    	                                       object_type=libsbml.Reaction)
 
   def testFindRoot(self):
     self.assertEqual(self.reaction1_analyzer.findRoot(inp_term='GO:0006402'), 'GO:0008150')

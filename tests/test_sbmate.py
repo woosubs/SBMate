@@ -28,14 +28,31 @@ class TestSBMate(unittest.TestCase):
   	self.assertEqual(self.metrics_class.coverage, 1.0)
 
   def testGetConsistency(self):
-  	consist_entities, consistency = self.metrics_class.getConsistency(self.metrics_class.consistent_entities)
-  	self.assertEqual(len(consist_entities), 19)
-  	self.assertFalse('cell' in consist_entities)
-  	self.assertEqual(self.metrics_class.consistency, 0.95)
+    consist_entities, consistency = self.metrics_class.getConsistency(self.metrics_class.consistent_entities)
+    self.assertEqual(len(consist_entities.keys()), 19)
+    self.assertFalse('cell' in consist_entities.keys())
+    self.assertEqual(self.metrics_class.consistency, 0.95)
+    none_consist_entities, none_consistency = self.metrics_class.getConsistency([])
+    self.assertEqual(none_consist_entities, None)
+    self.assertEqual(none_consistency, None)
 
   def testGetSpecificity(self):
-  	specificity = self.metrics_class.getSpecificity(self.metrics_class.consistent_entities)
-  	self.assertEqual(np.round(specificity, 2),0.88)
+    specificity = self.metrics_class.getSpecificity(self.metrics_class.consistent_entities)
+    self.assertEqual(specificity, 0.88)
+    # case for 'None'
+    none_specificity = self.metrics_class.getSpecificity(dict())
+    self.assertEqual(none_specificity, None)
+
+  # previous version
+  # def testGetConsistency(self):
+  # 	consist_entities, consistency = self.metrics_class.getConsistency(self.metrics_class.consistent_entities)
+  # 	self.assertEqual(len(consist_entities), 19)
+  # 	self.assertFalse('cell' in consist_entities)
+  # 	self.assertEqual(self.metrics_class.consistency, 0.95)
+
+  # def testGetSpecificity(self):
+  # 	specificity = self.metrics_class.getSpecificity(self.metrics_class.consistent_entities)
+  # 	self.assertEqual(np.round(specificity, 2),0.88)
 
 
 class TestFunctions(unittest.TestCase):

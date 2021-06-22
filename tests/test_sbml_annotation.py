@@ -11,7 +11,7 @@ from SBMate import constants as cn
 from SBMate import sbml_annotation as sa
 
 BIOMD_12 = 'BIOMD0000000012.xml'
-BIOMD_13 = 'BIOMD0000000013.xml'
+BIOMD_15 = 'BIOMD0000000015.xml'
 # k = sa.RawSBMLAnnotation(input_file=os.path.join(cn.TEST_DIR, BIOMD_12))
 # print(k.sbo)
 
@@ -23,9 +23,9 @@ class TestRawSBMLAnnotation(unittest.TestCase):
     self.sbml_model = document.getModel()
     self.raw_sbml_annotation = sa.RawSBMLAnnotation(input_file=os.path.join(cn.TEST_DIR, BIOMD_12))
     # BIOMD13 is for checking incompelte annotation 
-    incomplete_document = reader.readSBML(os.path.join(cn.TEST_DIR, BIOMD_13))
+    incomplete_document = reader.readSBML(os.path.join(cn.TEST_DIR, BIOMD_15))
     self.incompelte_sbml_model = incomplete_document.getModel()
-    self.incomplete_raw_sbml_annotation = sa.RawSBMLAnnotation(input_file=os.path.join(cn.TEST_DIR, BIOMD_13))
+    self.incomplete_raw_sbml_annotation = sa.RawSBMLAnnotation(input_file=os.path.join(cn.TEST_DIR, BIOMD_15))
 
   def testGetSBOAnnotation(self):
   	# testing annotations obtained from sbo_term
@@ -38,9 +38,9 @@ class TestRawSBMLAnnotation(unittest.TestCase):
     self.assertEqual(px_sbo_annotation[1], libsbml.Species)
     self.assertEqual(px_sbo_annotation[2], 'SBO:0000252')
     # case when SBO doesn't exist
-    no_sbo_annotation = self.incomplete_raw_sbml_annotation.getSBOAnnotation(self.incompelte_sbml_model.getReaction('E1'))
-    self.assertEqual(no_sbo_annotation[0], 'E1')
-    self.assertEqual(no_sbo_annotation[1], libsbml.Reaction)
+    no_sbo_annotation = self.incomplete_raw_sbml_annotation.getSBOAnnotation(self.incompelte_sbml_model.getSpecies('ATP'))
+    self.assertEqual(no_sbo_annotation[0], 'ATP')
+    self.assertEqual(no_sbo_annotation[1], libsbml.Species)
     self.assertEqual(no_sbo_annotation[2], None)
 
   def testGetOntAnnotation(self):
@@ -56,6 +56,11 @@ class TestRawSBMLAnnotation(unittest.TestCase):
     self.assertEqual(px_annotation[0], 'PX')
     self.assertEqual(px_annotation[1], libsbml.Species)
     self.assertEqual(px_annotation[2], px_str_annotation)
+    # case when string annotation doesn't exist
+    no_ont_annotation = self.incomplete_raw_sbml_annotation.getOntAnnotation(self.incompelte_sbml_model.getSpecies('ATP'))
+    self.assertEqual(no_ont_annotation[0], 'ATP')
+    self.assertEqual(no_ont_annotation[1], libsbml.Species)
+    self.assertEqual(no_ont_annotation[2], None) 
 
 
 class TestSortedSBMLAnnotation(unittest.TestCase):
