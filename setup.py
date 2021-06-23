@@ -27,7 +27,7 @@ def doSetup(install_requires):
       description='Annotation quality metrics calculator (coverage, consistency, specificity).',
       long_description=open('README.md').read(),
       long_description_content_type='text/markdown',
-      package_dir={'SBMate': 'SBMate'},
+      package_dir={'': 'SBMate'},
       install_requires=install_requires,
       include_package_data=True,
       data_files=[('knowledge_resources', 
