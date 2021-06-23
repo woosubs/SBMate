@@ -5,6 +5,8 @@ python:
   - "3.9"
 
 install:
+    - pip install coverage
+    - pip install coveralls
     - pip install networkx
     - pip install nose
     - pip install numpy
@@ -14,4 +16,5 @@ install:
 
 script:
   # Run the tests
-  - cd ..; nosetests SBMate/tests
+  - cd ..; nosetests --with-coverage SBMate/tests
+  - COVERALLS_REPO_TOKEN=AZ9nCjqJmNF7xVsjbZBP coveralls
