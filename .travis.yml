@@ -5,7 +5,7 @@ python:
   - "3.9"
 
 install:
-     - python setup.py install
+  - python setup.py install
 #    - pip install coverage
 #    - pip install coveralls
 #    - pip install networkx

@@ -1,6 +1,18 @@
 from setuptools import setup, find_packages
 
+#    - pip install coverage
+#    - pip install coveralls
+#    - pip install networkx
+#    - pip install nose
+#    - pip install numpy
+#    - pip install pandas
+#    - pip install python-libsbml
+#    - pip install requests
+
+
 INSTALL_REQUIRES = [
+    "coverage"
+    "coveralls"
     "networkx",
     "nose",
     "numpy",
