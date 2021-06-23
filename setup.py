@@ -1,15 +1,5 @@
 from setuptools import setup, find_packages
 
-#    - pip install coverage
-#    - pip install coveralls
-#    - pip install networkx
-#    - pip install nose
-#    - pip install numpy
-#    - pip install pandas
-#    - pip install python-libsbml
-#    - pip install requests
-
-
 INSTALL_REQUIRES = [
     "coverage"
     "coveralls"
@@ -28,7 +18,7 @@ def doSetup(install_requires):
       version='1.1.1',
       author='Woosub Shin',
       author_email='woosubs@umich.edu',
-      packages=find_packages(exclude=['tests', 'notebooks', 'knowledge_resources']),
+      packages=find_packages(exclude=['tests', 'notebooks']),
       scripts=[
           'SBMate/sbmate',
           'SBMate/sbmate.bat',
@@ -40,7 +30,7 @@ def doSetup(install_requires):
       package_dir={'SBMate': 'SBMate'},
       install_requires=install_requires,
       include_package_data=True,
-      data_files=[('knowledge_resources')],
+      data_files=[('knowledge_resources', ['knowledge_resources/*.gpickle'])],
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Intended Audience :: Developers',      # Define that your audience are developers
