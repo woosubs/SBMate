@@ -27,27 +27,48 @@ ANALYZER_DICT = {'go': da.DAGAnalyzer,
                 }
 
 
-
 class AnnotationMetrics(object):
   """
-  Collect model annotations and
-  calculate three scores:
+  Collects model annotations and
+  calculates three scores:
   1. coverage
   2. consistency
   3. specificity
+
+  Attributes
+  ----------
+  annotations: sbml_annotation.SortedSBMLAnnotation 
+      Sorted annotations for each knowledge resource.
+  annotated_entities: str-list
+      List of model entity names that are annotated.
+  consistent_entities: dict
+      Dictionary of model entity name: list of consistent analyzer classes.
+  coverage: float
+      Model coverage score.
+  consistency: float
+      Model consistency score. 
+  specificity: float
+      Model specificity score. 
+
+  Methods
+  -------
+  getCoverage(annotated_entities)
+      Calculates model coverage score.
+  getConsistency
+      Calculates model consistency score.
+  getSpecificity
+      Calculates model specificity score. 
   """
   def __init__(self, model_file):
     """
-    :param str model_file: address/name of the .xml model file
-    (explain more on consistency, specificity etc.)
+    Parameters
+    ----------
+    model_file: str 
+        Address/name of the .xml model file
     """
     self.annotations = sa.SortedSBMLAnnotation(file=model_file)
     self.annotated_entities, self.coverage = self.getCoverage()
-    # self.consistent_entities, self.consistency = self.getConsistency(self.annotated_entities)
-    # self.specificity = self.getSpecificity(self.consistent_entities)
-
-
-    # a different take using two Analyzer classes
+    # calculate scores using the two types of Analyzer class
     self.consistent_entities, self.consistency = self.getConsistency(self.annotated_entities)
     self.specificity = self.getSpecificity(self.consistent_entities)
 
@@ -59,9 +80,18 @@ class AnnotationMetrics(object):
     'annotated_entities' is a list of annotated model entity names.
     Returns dictionary of entity & analyzer instances,
     as well as consistency score.
-    :param str-list annotated_entities:
-    :return dict(Analyzer-list)/None: return None if no object is annotated
-    :return float/None: return None if no object is annotated
+
+    Parameters
+    ----------
+    annotated_entities: str-list 
+        List of annotated entities.
+
+    Returns
+    -------
+    consistent_dicts: dict (str: Analyzer-list) / None
+        Dictionary of consistenty entities and list of analyzers.
+    consistency_score: float/None
+        Consistency score. None if no object is annotated.
     """
     if not annotated_entities:
       return None, None
