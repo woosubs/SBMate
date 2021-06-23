@@ -1,6 +1,8 @@
 from setuptools import setup, find_packages
 
 INSTALL_REQUIRES = [
+    "coverage",
+    "coveralls",
     "networkx",
     "nose",
     "numpy",
@@ -17,10 +19,10 @@ def doSetup(install_requires):
       author='Woosub Shin',
       author_email='woosubs@umich.edu',
       packages=find_packages(exclude=['tests', 'notebooks']),
-      scripts=[
-          'SBMate/sbmate',
-          'SBMate/sbmate.bat',
-          ],
+      # scripts=[
+      #     'SBMate/sbmate',
+      #     'SBMate/sbmate.bat',
+      #     ],
       url='https://github.com/woosubs/SBMate',
       description='Annotation quality metrics calculator (coverage, consistency, specificity).',
       long_description=open('README.md').read(),
@@ -28,7 +30,11 @@ def doSetup(install_requires):
       package_dir={'SBMate': 'SBMate'},
       install_requires=install_requires,
       include_package_data=True,
-      data_files=[('knowledge_resources')],
+      data_files=[('knowledge_resources', 
+                   ['knowledge_resources/chebi_graph.gpickle',
+                    'knowledge_resources/go_graph.gpickle',
+                    'knowledge_resources/sbo_graph.gpickle'
+                   ])],
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Intended Audience :: Developers',      # Define that your audience are developers

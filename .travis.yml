@@ -5,13 +5,16 @@ python:
   - "3.9"
 
 install:
-    - pip install networkx
-    - pip install nose
-    - pip install numpy
-    - pip install pandas
-    - pip install python-libsbml
-    - pip install requests
+  - python setup.py install
+#    - pip install coverage
+#    - pip install coveralls
+#    - pip install networkx
+#    - pip install nose
+#    - pip install numpy
+#    - pip install pandas
+#    - pip install python-libsbml
+#    - pip install requests
 
 script:
   # Run the tests
-  - cd ..; nosetests SBMate/tests
+  - cd ..; nosetests --with-coverage SBMate/tests
