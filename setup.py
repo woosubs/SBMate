@@ -19,10 +19,10 @@ def doSetup(install_requires):
       author='Woosub Shin',
       author_email='woosubs@umich.edu',
       packages=find_packages(exclude=['tests', 'notebooks']),
-      scripts=[
-          'SBMate/sbmate',
-          'SBMate/sbmate.bat',
-          ],
+      # scripts=[
+      #     'SBMate/sbmate',
+      #     'SBMate/sbmate.bat',
+      #     ],
       url='https://github.com/woosubs/SBMate',
       description='Annotation quality metrics calculator (coverage, consistency, specificity).',
       long_description=open('README.md').read(),
