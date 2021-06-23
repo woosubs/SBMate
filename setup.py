@@ -28,7 +28,7 @@ def doSetup(install_requires):
       version='1.1.1',
       author='Woosub Shin',
       author_email='woosubs@umich.edu',
-      packages=find_packages(exclude=['tests', 'notebooks']),
+      packages=find_packages(exclude=['tests', 'notebooks', 'knowledge_resources']),
       scripts=[
           'SBMate/sbmate',
           'SBMate/sbmate.bat',
