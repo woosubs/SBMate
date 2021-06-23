@@ -17,3 +17,4 @@ install:
 script:
   # Run the tests
   - cd ..; nosetests --with-coverage SBMate/tests
+  - coveralls
