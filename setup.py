@@ -30,7 +30,11 @@ def doSetup(install_requires):
       package_dir={'SBMate': 'SBMate'},
       install_requires=install_requires,
       include_package_data=True,
-      data_files=[('knowledge_resources', ['knowledge_resources/*.gpickle'])],
+      data_files=[('knowledge_resources', 
+                   ['knowledge_resources/chebi_graph.gpickle',
+                    'knowledge_resources/go_graph.gpickle',
+                    'knowledge_resources/sbo_graph.gpickle'
+                   ])],
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Intended Audience :: Developers',      # Define that your audience are developers
