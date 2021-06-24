@@ -10,14 +10,11 @@ import pandas as pd
 import re
 import requests
 from SBMate import constants as cn
-from SBMate import consistency_score as cs
-from SBMate import sbml_annotation as sa
-from SBMate import specificity_score as ss
-
 from SBMate import dag_analyzer as da
+from SBMate import sbml_annotation as sa
 from SBMate import uniprot_kegg_analyzer as uka
 
-# mapping reaction type to the appropriate analyzer class
+# mapping reaction type to appropriate analyzer class
 ANALYZER_DICT = {'go': da.DAGAnalyzer,
                  'sbo': da.DAGAnalyzer,
                  'chebi': da.DAGAnalyzer,
@@ -118,8 +115,16 @@ class AnnotationMetrics(object):
     Specificity is defined as:
     log(num_ancestors/num_all_nodes) / log(1/num_all_nodes)
     'consistent_entities' is a list of consistent model entities. 
-    :param dict(Analyzer-list) consistent_entities:
-    :return float/None: return None if no object is consistent
+
+    Parameters
+    ----------
+    consistent_entities: dict (str: Analyzer-list)
+         Dictionary of consistenty entities and list of analyzers.
+
+    Returns
+    -------
+    specificity_score: float
+        Model specificity score.
     """
     # calculates specificity only if it has at least one consistent entity
     if consistent_entities:
@@ -137,13 +142,17 @@ class AnnotationMetrics(object):
     else:
       return None
 
-
   def getCoverage(self):
     """
     Coverage is defined as:
     (# annotated entities) / (# annotatable entities).
-    :return str-list:
-    :return float:
+
+    Returns
+    -------
+    list_annotated_entities: str-list
+        List of annotated model entity names.
+    '': float
+        Coverage score. 
     """
     num_annotatable_entities = len(self.annotations.annotations)
     # list_annotated_entities is constructed as below =>
@@ -158,67 +167,23 @@ class AnnotationMetrics(object):
     num_annotated_entities = len(list_annotated_entities)
     return list_annotated_entities, float(num_annotated_entities/num_annotatable_entities)
 
-  # Below are old version
-  # def getConsistency(self, annotated_entities):
-  #   """
-  #   Consistency is defined as:
-  #   (# consistently annotated entities) / (# annotated entities)
-  #   'annotated_entities' is a list of annotated model entities.
-  #   :param str-list annotated_entities:
-  #   :return str-list/None: return None if no object is annotated
-  #   :return float/None: return None if no object is annotated
-  #   """
-  #   if annotated_entities:
-  #     consistent_entities = []
-  #     # k is the name of each model entity
-  #     for k in annotated_entities:
-  #       entity_annotation = self.annotations.annotations[k]
-  #       entity_type = entity_annotation['object_type']
-  #       annotated_knowledge_resources = [ont \
-  #                                        for ont in cn.KNOWLEDGE_TYPES_REP \
-  #                                        if entity_annotation[ont]]
-  #       # By setup, annotated_knowledge_resources should have at least one item
-  #       is_consistent_list = [cs.CONSISTENCY_FUNC[one_ont](entity_annotation[one_ont], entity_type) \
-  #                             for one_ont in annotated_knowledge_resources]
-  #       if all(is_consistent_list):
-  #         consistent_entities.append(k) 
-  #     # if there is at least one annotated entity, return intended values
-  #     return consistent_entities, float(len(consistent_entities) / len(annotated_entities))
-  #   # else happens if no object is annotated
-  #   else: 
-  #     return None, None
-
-  # def getSpecificity(self, consistent_entities):
-  #   """
-  #   Specificity is defined as:
-  #   log2(num_ancestors/num_all_nodes) / log2(1/num_all_nodes)
-  #   'consistent_entities' is a list of consistent model entities. 
-  #   :param str-list consistent_entities:
-  #   :return float/None: return None if no object is consistent
-  #   """
-  #   specificity_score = []
-  #   if consistent_entities:
-  #     # k is the name of a consistent model entity
-  #     for k in consistent_entities:
-  #       entity_annotation = self.annotations.annotations[k]
-  #       consistent_knowledge_resources = [ont \
-  #                                        for ont in cn.KNOWLEDGE_TYPES_REP \
-  #                                        if entity_annotation[ont]]
-  #       entity_specificity = [ss.SPECIFICITY_FUNC[one_ont](entity_annotation[one_ont]) \
-  #                             for one_ont in consistent_knowledge_resources]
-  #       specificity_score.append(np.mean(entity_specificity))
-  #     return np.mean(specificity_score)
-  #   else:
-  #     return None
-
 
 def getMetrics(file, output="report"):
   """
   Using the AnnotationMetrics class,
   produces report on the three metrics.
-  :param str file: address of model file (.xml)
-  :param str output: output type ("report" or "table")
-  :return str: or DataFrame?
+
+  Parameters
+  ----------
+  file: str
+      Address of model file (.xml).
+  output: str
+      The type of output ("report" or "table").
+
+  Returns
+  --------
+  res: str / pandas.DataFrame
+      Final report (summary) of the model. 
   """
   metrics_class = AnnotationMetrics(model_file=file)
   if output=="report":
@@ -241,15 +206,6 @@ def getMetrics(file, output="report"):
                 }
     res = pd.DataFrame(res_dict)
   return res
-
-
-
-
-
-
-
-
-
 
 
 
