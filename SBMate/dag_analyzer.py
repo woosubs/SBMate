@@ -28,16 +28,56 @@ ONT_TO_ROOT = dict({"go": cn.GO_ROOTS, "sbo":cn.SBO_ROOTS, "chebi":cn.CHEBI_ROOT
 class DAGAnalyzer(object):
   """
   Analyzer for GO, SBO, and CHEBI.
+  Calculates object-level consistency 
+  and specificity. 
+  Terms are hierarchically arranged,
+  having one or a few terms as roots for
+  the rest of the terms. 
+
+  Attributes
+  ----------
+  term_id: str-list
+      List of identifiers to analyze.
+  ontology: str
+      Appropriate ontology type.
+  object_type: libsbml.AutoProperty
+      Type of the model entity.
+  dag: networkx.DiGraph
+      Directed Acyclic Graph for ontology system.
+  possible_roots: str-list
+      List of identifiers (roots) for all terms 
+      within the system.
+  term_to_root: None -> dict
+      Dictionary, mapping each identifier: its root.
+  consistent: bool
+      Bool determining whether the entity-object is consistent.   
+
+  Methods
+  -------
+  findRoot(inp_term)
+      Find an appropriate root of one identifier.
+  getConsistency (inp_term)
+      Check if the given term (ontology identifier)
+      is consistent.
+  getOneTermSpecificity (one_term)
+      Get the specificity of one identifier.
+  getSpecificity (inp_term)
+      Calculate specificity of a list of terms,
+      using getOneTermSpecificity method.
   """
 
   def __init__(self, term_id, ontology,
                object_type):
     """
-    param: str/list term_id: identifier to analyze
-                             should be in sbml_annotation format
-    param: str ontology: one of "go", "sbo", and "chebi"
-    param: libsbml.AutoProperty object_type: 
-           one of model entity types, e.g., libsbml.Species
+    Parameters
+    ----------
+    term_id: str-list
+        Identifier to analyze
+    ontology: str
+        Ontology (knowledge resource).
+        Should be one of {'go', 'sbo', 'chebi'}.
+    object_type: libsbml.AutoProperty
+        Type of model entity. For example, libsbml.Reaction
     """
     self.term_id = term_id
     self.ontology = ontology
@@ -51,11 +91,19 @@ class DAGAnalyzer(object):
     """
     Find the appropriate root for
     the given term, 
-    as specified by ONT_TO_ROOT.=
-    If none is found, return None
+    as specified by ONT_TO_ROOT.
+    If none is found, return None.
     (which is an error)
-    :param str inp_term: identifier to check
-    :return str/None
+
+    Parameters
+    ----------
+    inp_term: str
+        Identifier (string) to check. 
+
+    Returns
+    -------
+    one_ances: str, or None
+        Identifier of the root for the inp_term. 
     """
     if inp_term in self.dag:
       for one_ances in self.possible_roots:
@@ -66,16 +114,21 @@ class DAGAnalyzer(object):
 
   def getConsistency(self, inp_term):
     """
-    test if the given term
+    Tests if the given term
     or the list of the terms
     are consistent.
     inp_term should be either string or
     a list of strings
     (checked at the beginning).
-    :param str/list-str inp_term:
-    # below not used...
-    # :param libsbml.AutoProperty obj_type:
-    :return bool:
+
+    Parameters
+    ----------
+    inp_term: str/str-list
+        Identifier (or list of identifiers)
+
+    Returns
+    -------
+    '': bool
     """
     # first, check if the input term is in correct format
     if isinstance(inp_term, str):
@@ -89,7 +142,6 @@ class DAGAnalyzer(object):
     else:
       return False
     # if the term(s) are in correct format, check parents (roots)
-    # pars = [self.findRoot(one_term) for one_term in inp_list]
     par_dict = {one_term:self.findRoot(one_term) for one_term in inp_list}
     pars = [par_dict[k] for k in par_dict.keys()]
     par_types = set([cn.DAG_ROOT_MAP[self.ontology][ele] for ele in pars])
@@ -102,11 +154,18 @@ class DAGAnalyzer(object):
 
   def getOneTermSpecificity(self, one_term):
     """
-    Get specificity score for one term
-    :param str one_term:
-    :return float:
+    Get specificity score for one term.
+
+    Parameters
+    ----------
+    one_term: str
+         Identifier to check specificity.
+
+    Returns
+    -------
+    spec_score: float
+        Specificity score. 
     """
-    # 
     if not self.consistent or one_term not in self.dag:
       return None
     # Find appropriate root term
@@ -122,9 +181,17 @@ class DAGAnalyzer(object):
     Get specificity score of one or more terms,
     using getOneTermSpecificity().
     Specificity is calculated only if
-    the term is already consistent
-    :param str/str-list inp_term:
-    :return float: between 0 and 1
+    the term is already consistent.
+
+    Parameters
+    ----------
+    inp_term: str/str-list
+        Identifier(s) to check specificity.
+
+    Returns
+    -------
+    '': float / None
+        Specificity score (averaged within the same ontology).
     """
     if not self.consistent:
       return None

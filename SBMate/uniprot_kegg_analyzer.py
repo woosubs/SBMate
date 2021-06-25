@@ -27,15 +27,43 @@ KEGG_ERROR_MESSAGE = "No such data was found"
 class NonDAGAnalyzer(object):
   """
   Analyzer for UNIPROT and KEGG.
+
+  Attributes
+  ----------
+  term_id: str-list
+      List of identifiers to analyze.
+  ontology: str
+      Appropriate ontology type.
+  object_type: libsbml.AutoProperty
+      Type of the model entity.
+  consistent: bool
+      Bool determining whether the entity-object is consistent.     
+
+  Methods
+  -------
+  getOneTermConsistency (one_term)
+      Check if the given term (ontology identifier)
+      is consistent, using url. 
+  getConsistency (inp_term)
+      Check if the given term (ontology identifier)
+      is consistent.      
+  getSpecificity (inp_term)
+      Get specificity of a list of terms.
+      These ontologies are 1.0 if consistent. 
   """
 
   def __init__(self, term_id, ontology,
                object_type):
     """
-    param: str/list term_id: identifier to analyze
-    param: str ontology: one of "uniprot", "kegg_process", and "kegg_species"
-    param: libsbml.AutoProperty object_type: 
-           one of model entity types, e.g., libsbml.Species
+    Parameters
+    ----------
+    term_id: str-list
+        Identifier to analyze
+    ontology: str
+        Ontology (knowledge resource).
+        Should be one of {'go', 'sbo', 'chebi'}.
+    object_type: libsbml.AutoProperty
+        Type of model entity. For example, libsbml.Reactionß
     """
     self.term_id = term_id
     self.ontology = ontology
@@ -46,9 +74,18 @@ class NonDAGAnalyzer(object):
   def getOneTermConsistency(self, one_term):
     """
     Get consistency of one term,
-    by connecting to the url.
-    :param str one_term:
-    :return bool:
+    by connecting to the url
+    and checking it works. 
+
+    Parameters
+    ----------
+    one_term: str
+        One identifier string to check.
+
+    Returns
+    -------
+    '': bool
+        True if consistent; otherwise False
     """
     r = requests.get(ONT_TO_URL[self.ontology]+one_term)
     # for kegg, needs to check whether the text below is in the page
@@ -61,10 +98,20 @@ class NonDAGAnalyzer(object):
     """
     Using getOneTermConsistency(),
     check if the terms are consistent.
-    :param str/list inp_term:
-    :return bool:
+
+    Parameters
+    ----------
+    inp_term: str/str-list
+        A list of terms,
+        in the same ontology,
+        from a single model entity. 
+
+    Returns
+    -------
+    '': bool
+        True if all terms are consistent; otherwise False.
     """
-    # first, check if the input term is in correct format
+    # First, check if the input term is in correct format
     if isinstance(inp_term, str):
       inp_list = [inp_term]
     elif isinstance(inp_term, list):
@@ -90,8 +137,16 @@ class NonDAGAnalyzer(object):
     Get specificity score of one or more terms.
     Specificity is 1 for uniprot and KEGG, 
     as long as the therms are consistent.
-    :param str/str-list inp_term:
-    :return float: if consistent, assign 1.0
+
+    Parameters
+    ----------
+    inp_term: str/str-list
+        List of identifiers to check specificity
+
+    Returns
+    -------
+    '': float/None
+        If consistent, 1.0; otherwise None.
     """
     if not self.consistent:
       return None

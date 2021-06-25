@@ -14,14 +14,37 @@ ObjectAnnotation = collections.namedtuple('ObjectAnnotation',
 class RawSBMLAnnotation(object):
   """
   Collection of SBML object Annotations,
-  from sbo_term and getAnnotationString(). 
+  from sbo_term and getAnnotationString() methods.
+
+  Attributes
+  ----------
+  sbo: namedtuple 'ObjectAnnotation' - list
+      Collection of SBO terms
+  str_annotation: namedtuple 'ObjectAnnotation' - list
+      Collection of string annotations,
+      bqbiol:is or bqbiol:isVersionOf.
+
+  Methods
+  -------
+  getSBOAnnotation (sbml_object)
+      Create a list of SBO terms
+      from .sbo_term attribute of
+      libsbml model entity.
+  getOntAnnotatoin (sbml_object)
+      Create a list of string annotations
+      from .getAnnotataionString(). method of
+      libsbml model entity. 
   """
 
   def __init__(self, input_file,
                select_objects=cn.BIOMODEL_OBJECTS):
     """
-    :param str file: name/location of file
-    :param set/tuple select_objects: objects to pull out annotation from
+    Parameters
+    ----------
+    input_file: str
+        Name/location of model file (.xml)
+    select_objects: libsbml.AutoProperty - list
+        List of objects to pull out annotations from.
     """
     # load sbml file
     reader = libsbml.SBMLReader()
@@ -36,16 +59,30 @@ class RawSBMLAnnotation(object):
     """
     Returns a proper SBO term (e.g., SBO:0000290) 
     using the given sbml object.
-    Return None if term is not given
-    :param sbml-object:sbml_object
-    :return namedtuple 'ObjectAnnotation': (id, type, str/None)
+    Return None if term is not given.
+
+    Parameters
+    ----------
+    sbml_object: libsbml.AutoProperty
+
+    Returns
+    -------
+    '': namedtuple 'ObjectAnnotation': (id, type, str/None)
     """
     def formatSBO(sbo_num):
       """
       Reformat an SBO term into str.
       Return None if -1 (not provided).
-      :param int: sbo_num
-      :return str/None:
+
+      Parameters
+      ----------
+      sbo_num: int
+
+      Returns
+      -------
+      '': str/None
+          Return None if sbo term is -1 
+          (i.e.,  not provided)
       """
       if sbo_num == -1:
         return None
@@ -62,9 +99,15 @@ class RawSBMLAnnotation(object):
     """
     Parse string and return string annotation,
     marked as <bqbiol:is> or <bqbiol:isVersionOf>.
-    If neither exists, return None
-    :param sbml-object:sbml_object
-    :return namedtuple 'ObjectAnnotation': (id, type, str/None)
+    If neither exists, return None/
+
+    Parameters
+    ----------
+    sbml_object: libsbml.AutoProperty
+
+    Returns
+    -------
+    '': namedtuple 'ObjectAnnotation': (id, type, str/None)
     """
     input_id = sbml_object.getId()
     input_type = type(sbml_object)
@@ -98,6 +141,24 @@ class SortedSBMLAnnotation(object):
   """
   SBML annotations sorted by type.
   SBO, GO, KEGG, CHEBI, UNIPROT. 
+
+  Attributes
+  ----------
+  raw_annotations: RawSBMLAnnotation
+      Instance of RawSBMLAnnotation class.
+  object_ids: str-list
+      Names of model entities. 
+  annotations: dict(dict)
+      Dictionary of dictionary. 
+      object_id: {ontology type: identifiers}
+
+  Methods
+  -------
+  getAnnotoationDict (input_id)
+      Get dictionary of annotations.
+  getKnowledgeResourceTuple (input_annotation)
+      Extract identifiers from URI, 
+      included in the string annotation. 
   """
 
   def __init__(self, file, knowledge_resources=cn.KNOWLEDGE_TYPES_REP):
@@ -114,8 +175,16 @@ class SortedSBMLAnnotation(object):
     per category. 
     Returns a nested dictionary
     for each object. 
-    :param str input_id:
-    :return dict: {resource:identifier}
+
+    Parameters
+    ----------
+    input_id: str
+        Model entity id (name) to get annotation of.
+
+    Returns
+    -------
+    annotation_dict: dict {dict: {resource:identifier}}
+        Nested dictionary of annotations per object. 
     """
     annotation_dict = dict.fromkeys(cn.KNOWLEDGE_TYPES_REP)
     str_annotation_item = [ele for ele in self.raw_annotations.str_annotation \
@@ -129,10 +198,26 @@ class SortedSBMLAnnotation(object):
     
     # extra formatting for sbo
     def getSBOForm(inp_sbo):
+      """
+      Reformat an SBO term into str.
+      Return None if -1 (not provided).
+
+      Parameters
+      ----------
+      inp_sbo: int
+
+      Returns
+      -------
+      res_sbo: str/None
+          Return None if sbo term is -1 
+          (i.e.,  not provided)
+      """
       m = re.search('[0-9]+', inp_sbo)
       if m:
         res_sbo = 'SBO:' + inp_sbo[m.start():m.end()]
         return res_sbo
+      else:
+        return None
       
     if annotation_dict['sbo']:
       annotation_dict['sbo'] = [getSBOForm(ele) for ele in annotation_dict['sbo']]
@@ -156,9 +241,18 @@ class SortedSBMLAnnotation(object):
     """
     Extract all annotation type tuple from URIs 
     marked with identifier.org.
-    If nothing exists, return an empty string ''
-    :param str input_annotation:
-    :return list-str/None:
+    If nothing exists, return None
+
+    Parameters
+    ----------
+    input_annotation: str
+        Annotation string to extract annotation URI from.
+
+    Returns
+    -------
+    '': str-tuple/None
+        Extracted annotation.
+        Ontology - identifier tuple.
     """
     if input_annotation:
       identifiers_list = re.findall('identifiers\.org/.*/', input_annotation)
@@ -167,3 +261,10 @@ class SortedSBMLAnnotation(object):
               if r.split('/')[1] in cn.ALL_KNOWLEDGE_TYPES]
     else:
       return None
+
+
+
+
+
+
+
