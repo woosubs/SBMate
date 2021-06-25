@@ -6,7 +6,9 @@
 Systems Biology Model AnnoTation Evaluator
 
 ## Overview
-``SBMate`` evaluates the quality of annotations in SBML model entities, especially libsbml.Model, libsbml.Species, libsbml.Compartment, and libsbml.Reaction. 
+``SBMate`` evaluates the quality of annotations in SBML model entities, especially libsbml.Model, libsbml.Species, libsbml.Compartment, and libsbml.Reaction. Currently, it examines annotationos from five knowledge resources, CHEBI, GO, KEGG, SBO, and UNIPROT. 
+
+SBMate calculates three metrics. Coverage, consistency, and specificity. 
 
 It is quite easy to use SBMate, as there is just one main method, sbmate.getMetrics().
 
