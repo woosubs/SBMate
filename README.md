@@ -4,3 +4,5 @@
 
 # SBMate
 Systems Biology Model AnnoTation Evaluator
+
+<img src="https://github.com/woosubs/SBMate/blob/main/png/run_sbmate.png" width="800"/>
