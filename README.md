@@ -5,4 +5,16 @@
 # SBMate
 Systems Biology Model AnnoTation Evaluator
 
+## Overview
+``SBMate`` evaluates the quality of annotations in SBML model entities, especially libsbml.Model, libsbml.Species, libsbml.Compartment, and libsbml.Reaction. 
+
+It is quite easy to use SBMate, as there is just one command as shown below.
+
 <img src="https://github.com/woosubs/SBMate/blob/main/png/run_sbmate.png" width="800"/>
+
+By default, SBMate produces a report summarizing the three scores:
+
+<img src="https://github.com/woosubs/SBMate/blob/main/png/result_report.png" width="800"/>
+
+Another option is to create a pandas DataFrame, as below:
+
