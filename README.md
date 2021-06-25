@@ -18,3 +18,8 @@ By default, SBMate produces a report summarizing the three scores:
 
 Another option is to create a pandas DataFrame, as below:
 
+<img src="https://github.com/woosubs/SBMate/blob/main/png/run_sbmate_table.png" width="800"/>
+
+And you will get the dataframe. 
+
+<img src="https://github.com/woosubs/SBMate/blob/main/png/result_table.png" width="800"/>
