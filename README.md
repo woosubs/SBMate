@@ -7,8 +7,10 @@ Systems Biology Model AnnoTation Evaluator
 
 ## Overview
 ``SBMate`` evaluates the quality of annotations in SBML model entities, especially libsbml.Model, libsbml.Species, libsbml.Compartment, and libsbml.Reaction. Currently, it examines annotationos from five knowledge resources, CHEBI, GO, KEGG, SBO, and UNIPROT. 
+ 
+SBMate calculates three metrics. Coverage checks how many entities of the above four types (model, reaction, species, and compartment) are actually annotated. Consistency computes how many of such annotated entities has proper annotation. For example, a reaction object should not have a GO cellular component term. Consistency identifies such instances and calculates a model-level consistency score. Finally, specificity is a measure of how `precise` such consistent annotations are. 
 
-SBMate calculates three metrics. Coverage, consistency, and specificity. 
+if a model entity is actually annotated,  consistency, and specificity. 
 
 It is quite easy to use SBMate, as there is just one main method, sbmate.getMetrics().
 
