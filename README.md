@@ -10,7 +10,7 @@ Systems Biology Model AnnoTation Evaluator
  
 SBMate calculates three metrics: 
 1. Coverage checks how many entities of the above four types (model, reaction, species, and compartment) are actually annotated. 
-2. Consistency computes how many of such annotated entities has proper annotation. For example, a reaction object should not have a GO cellular component term (GO:0005575 or its children). Consistency identifies such instances and calculates the proprotion of model entities with consistent annotation. 
+2. Consistency computes how many of such annotated entities has proper annotation. For example, a reaction object should not have a GO cellular component term (GO:0005575 or its children). SBMate identifies such instances and calculates the proprotion of model entities whose annotations are consistent. 
 3. Finally, specificity is a measure of how 'precise' such consistent annotations are. This is obtained by utilizing the hierarchical structures of knowledge resource terms, such as the directed acyclic graphs of SBO and GO. 
 
 More detailed discussions can be found in our manuscript (in preparation). 
