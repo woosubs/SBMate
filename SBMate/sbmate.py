@@ -168,6 +168,63 @@ class AnnotationMetrics(object):
     return list_annotated_entities, float(num_annotated_entities/num_annotatable_entities)
 
 
+
+def getMetricsReport(metrics_tuple):
+  """
+  Create a string report for
+  an AnnotationMetrics class.
+
+  Parameters
+  ----------
+  metrics_tuple: tuple (str, AnnotationMetrics)
+      A tuple of file name and an AnnotationMetrics class instance
+
+  Returns
+  -------
+  report: str
+      Report summarizing the metrics
+  """
+  model_name = metrics_tuple[0]
+  metrics_class = metrics_tuple[1]
+  report = ""
+  report = report + "Model \'%s\' has total %d annotatable entities.\n" % \
+                     (model_name, len(metrics_class.annotations.annotations))
+  report = report + "%d entities are annotated.\n" % len(metrics_class.annotated_entities)
+  report = report + "%d entities are consistent.\n" % len(metrics_class.consistent_entities)
+  report = report + "...\n"
+  report = report + "Coverage is: {:.2f}\n".format(metrics_class.coverage) 
+  report = report + "Consistency is: {:.2f}\n".format(metrics_class.consistency) 
+  report = report + "Specificity is: {:.2f}\n".format(metrics_class.specificity)
+  return report
+
+def getMetricsTable(metrics_tuple):
+  """
+  Create a table (data frame) for
+  an AnnotationMetrics class.
+
+  Parameters
+  ----------
+  metrics_tuple: tuple (str, AnnotationMetrics)
+      A tuple of file name and an AnnotationMetrics class instance
+
+  Returns
+  -------
+  table: pandas.DataFrame
+      DataFrame summarizing metrics
+  """
+  model_name = metrics_tuple[0]
+  metrics_class = metrics_tuple[1]
+  res_dict = {model_name: {"num_annotatable_entities":len(metrics_class.annotations.annotations),
+                           "num_annotated_entities":len(metrics_class.annotated_entities),
+                           "num_consistent_entities":len(metrics_class.consistent_entities),
+                           "coverage":"{:.2f}".format(metrics_class.coverage),
+                           "consistency":"{:.2f}".format(metrics_class.consistency),
+                           "specificity":"{:.2f}".format(metrics_class.specificity),
+                          }
+             }
+  table = pd.DataFrame.from_dict(res_dict, orient='index')
+  return table
+
 def getMetrics(file, output="report"):
   """
   Using the AnnotationMetrics class,
@@ -175,36 +232,54 @@ def getMetrics(file, output="report"):
 
   Parameters
   ----------
-  file: str
-      Address of model file (.xml).
+  file: str/str-list
+      Address(es) of model file (.xml).
+      Should be string or list of string.
   output: str
       The type of output ("report" or "table").
 
   Returns
   --------
-  res: str / pandas.DataFrame
+  res: str / pandas.DataFrame / None
       Final report (summary) of the model. 
+      Return None if input type is incorrect. 
   """
-  metrics_class = AnnotationMetrics(model_file=file)
+
+  if isinstance(file, str):
+    file_list = [file]
+  elif isinstance(file, list):
+    if all([isinstance(one_file, str) for one_file in file]):
+      file_list = file
+    else:
+      return None
+  else:
+    return None
+
+  #metrics_class = AnnotationMetrics(model_file=file)
+  metrics_tuple_list = [(one_file[-19:], AnnotationMetrics(model_file=one_file)) for one_file in file_list]
   if output=="report":
-    res = ""
-    res = res + "Model has total %d annotatable entities.\n" % \
-                      len(metrics_class.annotations.annotations)
-    res = res + "%d entities are annotated.\n" % len(metrics_class.annotated_entities)
-    res = res + "%d entities are consistent.\n" % len(metrics_class.consistent_entities)
-    res = res + "...\n"
-    res = res + "Coverage is: {:.2f}\n".format(metrics_class.coverage) 
-    res = res + "Consistency is: {:.2f}\n".format(metrics_class.consistency) 
-    res = res + "Specificity is: {:.2f}\n".format(metrics_class.specificity) 
+    res_list = [getMetricsReport(one_tuple) for one_tuple in metrics_tuple_list]
+    res = ('\n').join(res_list)
+    # res = ""
+    # res = res + "Model has total %d annotatable entities.\n" % \
+    #                   len(metrics_class.annotations.annotations)
+    # res = res + "%d entities are annotated.\n" % len(metrics_class.annotated_entities)
+    # res = res + "%d entities are consistent.\n" % len(metrics_class.consistent_entities)
+    # res = res + "...\n"
+    # res = res + "Coverage is: {:.2f}\n".format(metrics_class.coverage) 
+    # res = res + "Consistency is: {:.2f}\n".format(metrics_class.consistency) 
+    # res = res + "Specificity is: {:.2f}\n".format(metrics_class.specificity) 
   elif output=="table":
-    res_dict = {"num_annotatable_entities":[len(metrics_class.annotations.annotations)],
-                "num_annotated_entities":[len(metrics_class.annotated_entities)],
-                "num_consistent_entities":[len(metrics_class.consistent_entities)],
-                "coverage":["{:.2f}".format(metrics_class.coverage)],
-                "consistency":["{:.2f}".format(metrics_class.consistency)],
-                "specificity":["{:.2f}".format(metrics_class.specificity)],
-                }
-    res = pd.DataFrame(res_dict)
+    res_list = [getMetricsTable(one_tuple) for one_tuple in metrics_tuple_list]
+    res = pd.concat(res_list)
+    # res_dict = {"num_annotatable_entities":[len(metrics_class.annotations.annotations)],
+    #             "num_annotated_entities":[len(metrics_class.annotated_entities)],
+    #             "num_consistent_entities":[len(metrics_class.consistent_entities)],
+    #             "coverage":["{:.2f}".format(metrics_class.coverage)],
+    #             "consistency":["{:.2f}".format(metrics_class.consistency)],
+    #             "specificity":["{:.2f}".format(metrics_class.specificity)],
+    #             }
+    # res = pd.DataFrame(res_dict)
   return res
 
 
