@@ -11,7 +11,7 @@ import libsbml
 import networkx as nx
 import numpy as np
 import os
-import pickle
+import pickle5 as pickle
 import re
 import requests
 from SBMate import constants as cn
