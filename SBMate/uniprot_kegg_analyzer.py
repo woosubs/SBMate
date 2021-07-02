@@ -8,10 +8,10 @@ and returns appropriate values.
 
 import collections
 import libsbml
-import networkx as nx
+# import networkx as nx
 import numpy as np
 import os
-import pickle5 as pickle
+# import pickle5 as pickle
 import re
 import requests
 from SBMate import constants as cn
