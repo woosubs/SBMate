@@ -12,7 +12,7 @@ import libsbml
 import networkx as nx
 import numpy as np
 import os
-import pickle
+import pickle5 as pickle
 from SBMate import constants as cn
 
 # Load ontology graphs

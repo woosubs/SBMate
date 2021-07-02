@@ -7,6 +7,7 @@ INSTALL_REQUIRES = [
     "nose",
     "numpy",
     "pandas",
+    "pickle5",
     "python-libsbml",
     "pyyaml",
     "requests"

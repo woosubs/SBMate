@@ -5,7 +5,6 @@ import libsbml
 import networkx as nx
 import numpy as np
 import os
-import pickle
 import pandas as pd
 import re
 import requests
@@ -197,6 +196,7 @@ def getMetricsReport(metrics_tuple):
   report = report + "Specificity is: {:.2f}\n".format(metrics_class.specificity)
   return report
 
+
 def getMetricsTable(metrics_tuple):
   """
   Create a table (data frame) for
@@ -224,6 +224,7 @@ def getMetricsTable(metrics_tuple):
              }
   table = pd.DataFrame.from_dict(res_dict, orient='index')
   return table
+
 
 def getMetrics(file, output="report"):
   """
@@ -255,31 +256,13 @@ def getMetrics(file, output="report"):
   else:
     return None
 
-  #metrics_class = AnnotationMetrics(model_file=file)
   metrics_tuple_list = [(one_file[-19:], AnnotationMetrics(model_file=one_file)) for one_file in file_list]
   if output=="report":
     res_list = [getMetricsReport(one_tuple) for one_tuple in metrics_tuple_list]
     res = ('\n').join(res_list)
-    # res = ""
-    # res = res + "Model has total %d annotatable entities.\n" % \
-    #                   len(metrics_class.annotations.annotations)
-    # res = res + "%d entities are annotated.\n" % len(metrics_class.annotated_entities)
-    # res = res + "%d entities are consistent.\n" % len(metrics_class.consistent_entities)
-    # res = res + "...\n"
-    # res = res + "Coverage is: {:.2f}\n".format(metrics_class.coverage) 
-    # res = res + "Consistency is: {:.2f}\n".format(metrics_class.consistency) 
-    # res = res + "Specificity is: {:.2f}\n".format(metrics_class.specificity) 
   elif output=="table":
     res_list = [getMetricsTable(one_tuple) for one_tuple in metrics_tuple_list]
     res = pd.concat(res_list)
-    # res_dict = {"num_annotatable_entities":[len(metrics_class.annotations.annotations)],
-    #             "num_annotated_entities":[len(metrics_class.annotated_entities)],
-    #             "num_consistent_entities":[len(metrics_class.consistent_entities)],
-    #             "coverage":["{:.2f}".format(metrics_class.coverage)],
-    #             "consistency":["{:.2f}".format(metrics_class.consistency)],
-    #             "specificity":["{:.2f}".format(metrics_class.specificity)],
-    #             }
-    # res = pd.DataFrame(res_dict)
   return res
 
 

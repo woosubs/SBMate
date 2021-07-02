@@ -6,14 +6,12 @@ import libsbml
 import os
 import unittest
 import sys
-# sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from SBMate import constants as cn
 from SBMate import sbml_annotation as sa
 
 BIOMD_12 = 'BIOMD0000000012.xml'
 BIOMD_15 = 'BIOMD0000000015.xml'
-# k = sa.RawSBMLAnnotation(input_file=os.path.join(cn.TEST_DIR, BIOMD_12))
-# print(k.sbo)
+
 
 class TestRawSBMLAnnotation(unittest.TestCase):
 
