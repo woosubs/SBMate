@@ -3,7 +3,6 @@ from setuptools import setup, find_packages
 INSTALL_REQUIRES = [
     "coverage",
     "coveralls",
-    "Cython",
     "networkx",
     "nose",
     "numpy",
