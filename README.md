@@ -1,4 +1,4 @@
-[![Build Status](https://www.travis-ci.com/woosubs/SBMate.svg?token=AZ9nCjqJmNF7xVsjbZBP&branch=main)](https://www.travis-ci.com/woosubs/SBMate) 
+[![Build Status](https://www.travis-ci.com/woosubs/SBMate.svg?token=AZ9nCjqJmNF7xVsjbZBP&branch=main)](https://www.travis-ci.com/woosubs/SBMate) [![Coverage Status](https://coveralls.io/repos/github/woosubs/SBMate/badge.svg)](https://coveralls.io/github/woosubs/SBMate)
 
 # SBMate
 Systems Biology Model AnnoTation Evaluator
