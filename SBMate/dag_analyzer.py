@@ -16,9 +16,13 @@ import pickle5 as pickle
 from SBMate import constants as cn
 
 # Load ontology graphs
-SBO_G = nx.read_gpickle(os.path.join(cn.RESOURCE_DIR, "sbo_graph.gpickle"))
-CHEBI_G = nx.read_gpickle(os.path.join(cn.RESOURCE_DIR, "chebi_graph.gpickle"))
-GO_G = nx.read_gpickle(os.path.join(cn.RESOURCE_DIR, "go_graph.gpickle"))
+# SBO_G = nx.read_gpickle(os.path.join(cn.RESOURCE_DIR, "sbo_graph.gpickle"))
+# CHEBI_G = nx.read_gpickle(os.path.join(cn.RESOURCE_DIR, "chebi_graph.gpickle"))
+# GO_G = nx.read_gpickle(os.path.join(cn.RESOURCE_DIR, "go_graph.gpickle"))
+SBO_G = pickle.load(open(os.path.join(cn.RESOURCE_DIR, "sbo_graph.gpickle"), 'rb'))
+CHEBI_G = pickle.load(open(os.path.join(cn.RESOURCE_DIR, "chebi_graph.gpickle"), 'rb'))
+GO_G = pickle.load(open(os.path.join(cn.RESOURCE_DIR, "go_graph.gpickle"), 'rb'))
+
 # Mapping ontology into specific graph
 ONT_TO_G = dict({"go":GO_G, "sbo":SBO_G, "chebi":CHEBI_G})
 # Mapping ontology to list of roots
