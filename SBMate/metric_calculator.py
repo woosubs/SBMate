@@ -53,7 +53,7 @@ class MetricCalculator(object):
   getSpecificity
       Calculates model specificity score. 
   """
-  def __init__(self, annotations, model_name):
+  def __init__(self, annotations, file):
     """
     Parameters
     ----------
@@ -63,7 +63,7 @@ class MetricCalculator(object):
         Name of the model; will be an index of the dataframe
     """
     self.annotations = annotations
-    self.model_name = model_name
+    self.model_name = file[-19:]
 
   def calculate(self):
     """
@@ -74,17 +74,30 @@ class MetricCalculator(object):
     '': pd.DataFrame
         Merged dataframe for each calculated metric.
     """
+    if self.annotations.annotations:
+      len_annotatable_entities = len(self.annotations.annotations)
+    else:
+      len_annotatable_entities = 0.0
     annotated_entities, coverage = self._getCoverage()
+    if annotated_entities:
+      len_annotated_entities = len(annotated_entities)
+    else:
+      len_annotated_entities = None
     # calculate scores using the two types of Analyzer class
     consistent_entities, consistency = self._getConsistency(annotated_entities)
+    if consistent_entities:
+      len_consistent_entities = len(consistent_entities)
+    else:
+      len_consistent_entities = None
     specificity = self._getSpecificity(consistent_entities)
-    coverage_Df = self.mkDataframe({'annotated_entities':len(annotated_entities),
+    entities_Df = self.mkDataframe({'annotatable_entities': len_annotatable_entities})
+    coverage_Df = self.mkDataframe({'annotated_entities':len_annotated_entities,
                                     'coverage': coverage})
-    consistency_Df = self.mkDataframe({'consistent_entities':len(consistent_entities),
+    consistency_Df = self.mkDataframe({'consistent_entities':len_consistent_entities,
                                        'consistency': consistency})
     specificity_Df = self.mkDataframe({'specificity': specificity})
 
-    return pd.concat([coverage_Df, consistency_Df, specificity_Df], axis=1)
+    return pd.concat([entities_Df, coverage_Df, consistency_Df, specificity_Df], axis=1)
     
   def mkDataframe(self, score_info):
     """
@@ -190,7 +203,8 @@ class MetricCalculator(object):
                                if any([self.annotations.annotations[k][ont] for ont \
                                in cn.KNOWLEDGE_TYPES_REP])]
     num_annotated_entities = len(list_annotated_entities)
-    return list_annotated_entities, float(num_annotated_entities/num_annotatable_entities)
+    coverage_score = float(num_annotated_entities/num_annotatable_entities)
+    return list_annotated_entities, np.round(coverage_score, 2)
 
 
 

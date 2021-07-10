@@ -30,7 +30,7 @@ class AnnotationMetrics(object):
     self.annotations = sa.SortedSBMLAnnotation(file=model_file)
     if metric_calculator_cls is None:
       metric_calculator_cls = MetricCalculator
-    calculator = metric_calculator_cls(annotations=self.annotations, model_name=model_file)
+    calculator = metric_calculator_cls(annotations=self.annotations, file=model_file)
     self.metrics_df = calculator.calculate()
 
 
@@ -50,8 +50,6 @@ def _getMetricsReport(metrics_df):
   '': str
       Report summarizing the metrics df.
   """
-  # model_name = metrics_tuple[0]
-  # metrics_class = metrics_tuple[1]
   report = ["Summary of Metrics (%s)\n----------------------\n" % metrics_df.index[0]]
   report = report + ["%s: %s\n" % (col, metrics_df[col][0]) for col in metrics_df]
   report.append("----------------------\n")
