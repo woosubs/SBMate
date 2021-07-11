@@ -1,6 +1,5 @@
 # test_metric_calculator.py
 
-
 import libsbml
 import networkx as nx
 import numpy as np
@@ -9,7 +8,6 @@ import pandas as pd
 import re
 import requests
 import unittest
-
 from SBMate import constants as cn
 from SBMate import metric_calculator as mc
 from SBMate import sbml_annotation as sa
@@ -17,6 +15,7 @@ from SBMate import sbml_annotation as sa
 
 BIOMD_12 = 'BIOMD0000000012.xml'
 BIOMD_970 = 'BIOMD0000000970.xml'
+
 
 class TestMetricCalculator(unittest.TestCase):
 
