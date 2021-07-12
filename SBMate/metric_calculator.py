@@ -53,6 +53,7 @@ class MetricCalculator(object):
   getSpecificity
       Calculates model specificity score. 
   """
+
   def __init__(self, annotations, file):
     """
     Parameters
@@ -98,7 +99,7 @@ class MetricCalculator(object):
     specificity_Df = self.mkDataframe({'specificity': specificity})
 
     return pd.concat([entities_Df, coverage_Df, consistency_Df, specificity_Df], axis=1)
-    
+
   def mkDataframe(self, score_info):
     """
     Creates a DataFrame using the entity information
@@ -205,7 +206,6 @@ class MetricCalculator(object):
     num_annotated_entities = len(list_annotated_entities)
     coverage_score = float(num_annotated_entities/num_annotatable_entities)
     return list_annotated_entities, np.round(coverage_score, 2)
-
 
 
 
