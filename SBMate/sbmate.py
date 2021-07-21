@@ -16,16 +16,16 @@ class AnnotationMetrics(object):
 
   Attributes
   ----------
-  annotations: sbml_annotation.SortedSBMLAnnotation 
+  annotations: sbml_annotation.SortedSBMLAnnotation
       Sorted annotations for each knowledge resource.
-  calculatorDf: dataframe of metrics. 
+  calculatorDf: dataframe of metrics.
   """
 
   def __init__(self, model_file, metric_calculator_classes=None):
     """
     Parameters
     ----------
-    model_file: str 
+    model_file: str
         Address/name of the .xml model file
     metric_calculator_classes: list-type
     """
@@ -45,7 +45,7 @@ class AnnotationMetrics(object):
     """
     Create a string report for
     an AnnotationMetrics class.
-  
+
     Returns
     -------
     '': str
@@ -57,13 +57,13 @@ class AnnotationMetrics(object):
         for col in self.metrics_df]
     report.append("----------------------\n")
     return ('').join(report)
-  
+
   @classmethod
   def getMetrics(cls, file, output="report"):
     """
     Using the AnnotationMetrics class,
     produces report on the three metrics.
-  
+
     Parameters
     ----------
     file: str/str-list
@@ -71,14 +71,14 @@ class AnnotationMetrics(object):
         Should be string or list of string.
     output: str
         The type of output ("report" or "table").
-  
+
     Returns
     --------
     res: str / pandas.DataFrame / None
-        Final report (summary) of the model. 
-        Return None if input type is incorrect. 
+        Final report (summary) of the model.
+        Return None if input type is incorrect.
     """
-  
+
     # FIXME: Should you return None or throw an exception?
     if isinstance(file, str):
       file_list = [file]
@@ -89,7 +89,7 @@ class AnnotationMetrics(object):
         return None
     else:
       return None
-  
+
     annotation_metrics_list = [cls(model_file=one_file)
         for one_file in file_list]
     if output == "report":
@@ -99,6 +99,3 @@ class AnnotationMetrics(object):
       res_list = [m.metrics_df for m in annotation_metrics_list]
       res = pd.concat(res_list)
     return res
-
-
-
