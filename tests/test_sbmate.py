@@ -1,5 +1,6 @@
 # test_sbmate_1.py
 
+import copy
 import libsbml
 import numpy as np
 import os
@@ -14,17 +15,23 @@ RESULT_REPORT = "Summary of Metrics (BIOMD0000000012.xml)\n---------------------
                 "annotatable_entities: 20\nannotated_entities: 20\ncoverage: 1.0\n" + \
                 "consistent_entities: 19\nconsistency: 0.95\nspecificity: 0.88\n" +\
                 "----------------------\n"
+IGNORE_TEST = True
+IS_PLOT = True
+MODEL_FILE = os.path.join(cn.TEST_DIR, BIOMD_12)
+ANNOTATION_METRICS = sbmate.AnnotationMetrics(MODEL_FILE)
 
 
 class TestAnnotatinoMetrics(unittest.TestCase):
 
   def setUp(self):	
-    self.metrics_class = sbmate.AnnotationMetrics(model_file=os.path.join(cn.TEST_DIR, BIOMD_12))
+    self.annotation_metrics = copy.deepcopy(ANNOTATION_METRICS)
 
   def testInit(self):
-    df = self.metrics_class.metrics_df
+    if IGNORE_TEST:
+        return
+    df = self.annotation_metrics.metrics_df
     self.assertEqual(df.shape, (1,6))
-    self.assertEqual(df.index[0], BIOMD_12)
+    self.assertEqual(df.index[0], MODEL_FILE)
     self.assertEqual(int(df['annotatable_entities']), 20)
     self.assertEqual(int(df['annotated_entities']), 20)
     self.assertEqual(float(df['coverage']), 1.0)
@@ -32,28 +39,31 @@ class TestAnnotatinoMetrics(unittest.TestCase):
     self.assertEqual(float(df['consistency']), 0.95)
     self.assertEqual(float(df['specificity']), 0.88)
 
-
-class TestFunctions(unittest.TestCase):
-
-  def setUp(self):
-  	self.one_metrics = sbmate.AnnotationMetrics(model_file=os.path.join(cn.TEST_DIR, BIOMD_12))
-
   def testGetMetrics(self):
-    self.res_report = sbmate.getMetrics(os.path.join(cn.TEST_DIR, BIOMD_12), output="report")
-    self.res_df = sbmate.getMetrics(os.path.join(cn.TEST_DIR, BIOMD_12), output="table")
-    self.res_none = sbmate.getMetrics(123, output="table")
-    self.res_none2 = sbmate.getMetrics([123, 'abc'], output="table")
+    # TESTING
+    self.res_report = sbmate.AnnotationMetrics.getMetrics(MODEL_FILE,
+        output="report")
+    self.res_df = self.annotation_metrics.getMetrics(MODEL_FILE,
+        output="table")
+    self.res_none = self.annotation_metrics.getMetrics(
+        123, output="table")
+    self.res_none2 = self.annotation_metrics.getMetrics(
+        [123, 'abc'], output="table")
     self.assertEqual(self.res_report, RESULT_REPORT)
     self.assertEqual(self.res_df.shape, (1,6))
     self.assertEqual(self.res_none, None)
     self.assertEqual(self.res_none2, None)
 
   def testGetMetricsReport(self):
-    report = sbmate._getMetricsReport(self.one_metrics.metrics_df)
+    if IGNORE_TEST:
+      return
+    report = sbmate._getMetricsReport()
     self.assertEqual(report, RESULT_REPORT)
 
-  def testGetMetricsTable(self):
-    df = sbmate._getMetricsTable(self.one_metrics.metrics_df)
+  def testMetricsTable(self):
+    if IGNORE_TEST:
+      return
+    df = self.annotation_metrics.metrics_df
     self.assertEqual(df.shape, (1,6))
     self.assertEqual(df.index[0], BIOMD_12)
     self.assertEqual(int(df['annotatable_entities']), 20)
@@ -66,9 +76,3 @@ class TestFunctions(unittest.TestCase):
 
 if __name__ == '__main__':
   unittest.main()
-
-
-
-
-
-

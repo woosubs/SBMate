@@ -54,7 +54,7 @@ class MetricCalculator(object):
       Calculates model specificity score. 
   """
 
-  def __init__(self, annotations, file):
+  def __init__(self, annotations, model_name):
     """
     Parameters
     ----------
@@ -64,7 +64,7 @@ class MetricCalculator(object):
         Name of the model; will be an index of the dataframe
     """
     self.annotations = annotations
-    self.model_name = file[-19:]
+    self.model_name = model_name
 
   def calculate(self):
     """
