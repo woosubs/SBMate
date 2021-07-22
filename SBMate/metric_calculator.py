@@ -206,6 +206,3 @@ class MetricCalculator(object):
     num_annotated_entities = len(list_annotated_entities)
     coverage_score = float(num_annotated_entities/num_annotatable_entities)
     return list_annotated_entities, np.round(coverage_score, 2)
-
-
-
