@@ -1,4 +1,4 @@
-# sbmate.py
+# metric_calculator.py
 # calculate annotation scores
 
 import libsbml
@@ -61,7 +61,7 @@ class MetricCalculator(object):
     annotations: sbml_annotation.SortedSBMLAnnotation 
         Sorted annotations for the five knowledge resources.
     model: str
-        Name of the model; will be an index of the dataframe
+        Name of the model; will be index of the dataframe
     """
     self.annotations = annotations
     self.model_name = model_name

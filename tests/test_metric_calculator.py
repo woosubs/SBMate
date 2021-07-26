@@ -22,8 +22,8 @@ class TestMetricCalculator(unittest.TestCase):
   def setUp(self):	
     self.one_annotation = sa.SortedSBMLAnnotation(file=os.path.join(cn.TEST_DIR, BIOMD_12))
     self.two_annotation = sa.SortedSBMLAnnotation(file=os.path.join(cn.TEST_DIR, BIOMD_970))
-    self.calculator = mc.MetricCalculator(annotations=self.one_annotation, file=BIOMD_12)
-    self.none_calculator = mc.MetricCalculator(annotations=self.two_annotation, file=BIOMD_970)
+    self.calculator = mc.MetricCalculator(annotations=self.one_annotation, model_name=BIOMD_12)
+    self.none_calculator = mc.MetricCalculator(annotations=self.two_annotation, model_name=BIOMD_970)
 
   def testCalculate(self):
     metrics_df = self.calculator.calculate()
