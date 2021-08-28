@@ -115,14 +115,14 @@ class RawSBMLAnnotation(object):
     #
     is_str = ''
     isVersionOf_str = ''
-    is_str_match = re.findall('<bqbiol:is>.*?<\/bqbiol:is>',
+    is_str_match = re.findall('<bqbiol:is[^a-zA-Z].*?<\/bqbiol:is>',
                               input_annotation,
                               flags=re.DOTALL)
     if len(is_str_match)>0:
       is_str_match_filt = [s.replace("      ", "") for s in is_str_match]
       is_str = '\n'.join(is_str_match_filt)
 
-    is_VersionOf_str_match = re.findall('<bqbiol:isVersionOf>.*?<\/bqbiol:isVersionOf>',
+    is_VersionOf_str_match = re.findall('<bqbiol:isVersionOf[^a-zA-Z].*?<\/bqbiol:isVersionOf>',
                                         input_annotation,
                                         flags=re.DOTALL)
     #
