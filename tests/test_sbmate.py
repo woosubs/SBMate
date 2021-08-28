@@ -25,6 +25,7 @@ IGNORE_TEST = False
 IS_PLOT = False
 MODEL_FILE = os.path.join(cn.TEST_DIR, BIOMD_12)
 ANNOTATION_METRICS = sbmate.AnnotationMetrics(MODEL_FILE)
+
 METRIC_NAMES = [
     'annotatable_entities',
     'annotated_entities',
@@ -39,6 +40,11 @@ class TestAnnotatinoMetrics(unittest.TestCase):
 
   def setUp(self):	
     self.annotation_metrics = copy.deepcopy(ANNOTATION_METRICS)
+
+  def testInit(self):
+    if IGNORE_TEST:
+        return
+    df = self.annotation_metrics.metrics_df
 
   def testTwoClasses(self):
     if IGNORE_TEST:
