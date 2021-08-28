@@ -16,101 +16,86 @@ class AnnotationMetrics(object):
 
   Attributes
   ----------
-  annotations: sbml_annotation.SortedSBMLAnnotation 
+  annotations: sbml_annotation.SortedSBMLAnnotation
       Sorted annotations for each knowledge resource.
-  calculatorDf: dataframe of metrics. 
+  calculatorDf: dataframe of metrics.
   """
-  def __init__(self, model_file, metric_calculator_cls=None):
+
+  def __init__(self, model_file, metric_calculator_classes=None):
     """
     Parameters
     ----------
-    model_file: str 
+    model_file: str
         Address/name of the .xml model file
+    metric_calculator_classes: list-type
     """
     self.annotations = sa.SortedSBMLAnnotation(file=model_file)
-    if metric_calculator_cls is None:
-      metric_calculator_cls = MetricCalculator
-    calculator = metric_calculator_cls(annotations=self.annotations, file=model_file)
-    self.metrics_df = calculator.calculate()
+    if metric_calculator_classes is None:
+      metric_calculator_classes = []
+    metric_calculator_classes.append(MetricCalculator)
+    # Calculate a DataFrame for each metric calculator
+    dfs = []
+    for cls in metric_calculator_classes:
+      calculator = cls(annotations=self.annotations, model_name=model_file)
+      dfs.append(calculator.calculate())
+    # Merge the DataFrames
+    self.metrics_df = pd.concat(dfs, axis=1)
 
+  def _getMetricsReport(self):
+    """
+    Create a string report for
+    an AnnotationMetrics class.
 
-def _getMetricsReport(metrics_df):
-  """
-  Create a string report for
-  an AnnotationMetrics class.
+    Returns
+    -------
+    '': str
+        Report summarizing the metrics df.
+    """
+    report = ["Summary of Metrics (%s)\n----------------------\n"
+        % self.metrics_df.index[0]]
+    report = report + ["%s: %s\n" % (col, self.metrics_df[col][0])
+        for col in self.metrics_df]
+    report.append("----------------------\n")
+    return ('').join(report)
 
-  Parameters
-  ----------
-  metrics_df: pandas.DataFrame
-      A one-row dataframe with metrics.
-      Index is model name. 
+  @classmethod
+  def getMetrics(cls, file, output="report"):
+    """
+    Using the AnnotationMetrics class,
+    produces report on the three metrics.
 
-  Returns
-  -------
-  '': str
-      Report summarizing the metrics df.
-  """
-  report = ["Summary of Metrics (%s)\n----------------------\n" % metrics_df.index[0]]
-  report = report + ["%s: %s\n" % (col, metrics_df[col][0]) for col in metrics_df]
-  report.append("----------------------\n")
-  return ('').join(report)
+    Parameters
+    ----------
+    file: str/str-list
+        Address(es) of model file (.xml).
+        Should be string or list of string.
+    output: str
+        The type of output ("report" or "table").
 
-def _getMetricsTable(metrics_df):
-  """
-  Create a table (data frame) for
-  an AnnotationMetrics class.
+    Returns
+    --------
+    res: str / pandas.DataFrame / None
+        Final report (summary) of the model.
+        Return None if input type is incorrect.
+    """
 
-  Parameters
-  ----------
-  metrics_df: pandas.DataFrame
-      A data frame with metrics.
-      Index is model name. 
-
-  Returns
-  -------
-  table: pandas.DataFrame
-      DataFrame summarizing metrics
-  """
-  return metrics_df
-
-def getMetrics(file, output="report"):
-  """
-  Using the AnnotationMetrics class,
-  produces report on the three metrics.
-
-  Parameters
-  ----------
-  file: str/str-list
-      Address(es) of model file (.xml).
-      Should be string or list of string.
-  output: str
-      The type of output ("report" or "table").
-
-  Returns
-  --------
-  res: str / pandas.DataFrame / None
-      Final report (summary) of the model. 
-      Return None if input type is incorrect. 
-  """
-
-  if isinstance(file, str):
-    file_list = [file]
-  elif isinstance(file, list):
-    if all([isinstance(one_file, str) for one_file in file]):
-      file_list = file
+    # FIXME: Should you return None or throw an exception?
+    if isinstance(file, str):
+      file_list = [file]
+    elif isinstance(file, list):
+      if all([isinstance(one_file, str) for one_file in file]):
+        file_list = file
+      else:
+        return None
     else:
       return None
-  else:
-    return None
 
-  metrics_tuple_list = [AnnotationMetrics(model_file=one_file) for one_file in file_list]
-  if output=="report":
-    res_list = [_getMetricsReport(m.metrics_df) for m in metrics_tuple_list]
-    res = ('\n').join(res_list)
-  elif output=="table":
-    res_list = [_getMetricsTable(m.metrics_df) for m in metrics_tuple_list]
-    res = pd.concat(res_list)
-  return res
-
-
-
+    annotation_metrics_list = [cls(model_file=one_file)
+        for one_file in file_list]
+    if output == "report":
+      res_list = [m._getMetricsReport() for m in annotation_metrics_list]
+      res = ('\n').join(res_list)
+    elif output=="table":
+      res_list = [m.metrics_df for m in annotation_metrics_list]
+      res = pd.concat(res_list)
+    return res

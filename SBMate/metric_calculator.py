@@ -1,4 +1,4 @@
-# sbmate.py
+# metric_calculator.py
 # calculate annotation scores
 
 import libsbml
@@ -54,17 +54,17 @@ class MetricCalculator(object):
       Calculates model specificity score. 
   """
 
-  def __init__(self, annotations, file):
+  def __init__(self, annotations, model_name):
     """
     Parameters
     ----------
     annotations: sbml_annotation.SortedSBMLAnnotation 
         Sorted annotations for the five knowledge resources.
     model: str
-        Name of the model; will be an index of the dataframe
+        Name of the model; will be index of the dataframe
     """
     self.annotations = annotations
-    self.model_name = file[-19:]
+    self.model_name = model_name
 
   def calculate(self):
     """
@@ -206,6 +206,3 @@ class MetricCalculator(object):
     num_annotated_entities = len(list_annotated_entities)
     coverage_score = float(num_annotated_entities/num_annotatable_entities)
     return list_annotated_entities, np.round(coverage_score, 2)
-
-
-
