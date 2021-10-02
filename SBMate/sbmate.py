@@ -35,8 +35,10 @@ class AnnotationMetrics(object):
     metric_calculator_classes.append(MetricCalculator)
     # Calculate a DataFrame for each metric calculator
     dfs = []
+    # in case model_file is given as a path, get the last file name
+    index_model_name = model_file.split('/')[-1]
     for cls in metric_calculator_classes:
-      calculator = cls(annotations=self.annotations, model_name=model_file)
+      calculator = cls(annotations=self.annotations, model_name=index_model_name)
       dfs.append(calculator.calculate())
     # Merge the DataFrames
     self.metrics_df = pd.concat(dfs, axis=1)

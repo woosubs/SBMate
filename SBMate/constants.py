@@ -53,9 +53,9 @@ SBOS = {'biomodels.sbo', 'sbo'}
 CHEBIS = {'chebi', 'obo.chebi'}
 KEGG_SPEC = {'kegg.compound',
              'kegg.genes',
-             'kegg.drug'}
+             'kegg.drug',
+             'kegg.orthology'}
 KEGG_PROC= {'kegg.reaction',
-            'kegg.orthology',
             'kegg.pathway'}
 UNIPROTS = {'uniprot', 'uniprot.isoform'}
 

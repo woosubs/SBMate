@@ -58,7 +58,7 @@ class TestAnnotatinoMetrics(unittest.TestCase):
 
   def basicChecks(self, df):
     self.assertEqual(df.shape, (1,6))
-    self.assertEqual(df.index[0], MODEL_FILE)
+    self.assertEqual(df.index[0], BIOMD_12)
     self.assertEqual(int(df['annotatable_entities']), 20)
     self.assertEqual(int(df['annotated_entities']), 20)
     self.assertEqual(float(df['coverage']), 1.0)
