@@ -9,7 +9,7 @@ install:
 
 script:
   # Run the tests
-  - cd ..; nosetests --with-coverage SBMate/tests
+  - cd ..; nosetests --with-coverage --cover-package=SBMate SBMate/tests
 
 after_success:
   - coveralls
