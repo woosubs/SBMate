@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 INSTALL_REQUIRES = [
-    "coverage",
+    "coverage==5.5",
     "coveralls",
     "networkx",
     "nose",
