@@ -34,5 +34,5 @@ And you will get the dataframe.
 You can add additional metrics by creating a class that calculates metrics.
 Metric values are contained in a ``pandas`` ``DataFrame``.
 See ``metric_calculator.py`` to see how to write a class that calculates metrics.
-When you construct ``AnnotationMetrics``, you will include it in a list that for keyword argument ``metric_calculator_classes``
+When you construct ``AnnotationMetrics``, you will assign a value to the keyword argument ``metric_calculator_classes``
 of the constructor.
