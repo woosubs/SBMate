@@ -12,6 +12,7 @@ from SBMate import sbmate
 
 
 BIOMD_12 = 'BIOMD0000000012.xml'
+BIOMD_13 = 'BIOMD0000000013.xml'
 RESULT_REPORT_ENTRIES = [
     "annotatable_elements: 20",
     "annotated_elements: 20",
@@ -84,6 +85,16 @@ class TestAnnotatinoMetrics(unittest.TestCase):
     res_df = self.annotation_metrics.getMetrics(MODEL_FILE,
         output="table")
     self.assertEqual(res_df.shape, (1,6))
+    self.assertEqual(int(res_df['annotatable_elements']), 20)
+    self.assertEqual(int(res_df['annotated_elements']), 20)
+    self.assertEqual(float(res_df['coverage']), 1.0)
+    self.assertEqual(int(res_df['consistent_elements']), 19)
+    self.assertEqual(float(res_df['consistency']), 0.95)
+    self.assertEqual(float(res_df['specificity']), 0.88) 
+    
+    res_report =  self.annotation_metrics.getMetrics(MODEL_FILE,
+        output="report")
+    self.assertEqual(res_report, self.annotation_metrics._getMetricsReport())
     with self.assertRaises(ValueError) as context: 
       self.annotation_metrics.getMetrics(123, output="table")
     with self.assertRaises(ValueError) as context: 
