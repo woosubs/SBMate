@@ -25,6 +25,7 @@ RESULT_REPORT_ENTRIES = [
 IGNORE_TEST = False
 IS_PLOT = False
 MODEL_FILE = os.path.join(cn.TEST_DIR, BIOMD_12)
+MODEL_FILE2 = os.path.join(cn.TEST_DIR, BIOMD_13)
 ANNOTATION_METRICS = sbmate.AnnotationMetrics(MODEL_FILE)
 
 METRIC_NAMES = [
@@ -92,7 +93,7 @@ class TestAnnotatinoMetrics(unittest.TestCase):
     self.assertEqual(float(res_df['consistency']), 0.95)
     self.assertEqual(float(res_df['specificity']), 0.88) 
 
-    res_df2 = self.annotation_metrics.getMetrics([BIOMD_12, BIOMD_13], 
+    res_df2 = self.annotation_metrics.getMetrics([MODEL_FILE, MODEL_FILE2], 
                                                   output="table")
     self.assertEqual(res_df2.shape, (2,6))
     self.assertEqual(list(res_df2.columns), METRIC_NAMES)
