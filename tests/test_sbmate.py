@@ -12,11 +12,12 @@ from SBMate import sbmate
 
 
 BIOMD_12 = 'BIOMD0000000012.xml'
+BIOMD_13 = 'BIOMD0000000013.xml'
 RESULT_REPORT_ENTRIES = [
-    "annotatable_entities: 20",
-    "annotated_entities: 20",
+    "annotatable_elements: 20",
+    "annotated_elements: 20",
     "coverage: 1.0",
-    "consistent_entities: 19",
+    "consistent_elements: 19",
     "consistency: 0.9",
     "specificity: 0.88",
     BIOMD_12,
@@ -24,13 +25,14 @@ RESULT_REPORT_ENTRIES = [
 IGNORE_TEST = False
 IS_PLOT = False
 MODEL_FILE = os.path.join(cn.TEST_DIR, BIOMD_12)
+MODEL_FILE2 = os.path.join(cn.TEST_DIR, BIOMD_13)
 ANNOTATION_METRICS = sbmate.AnnotationMetrics(MODEL_FILE)
 
 METRIC_NAMES = [
-    'annotatable_entities',
-    'annotated_entities',
+    'annotatable_elements',
+    'annotated_elements',
     'coverage',
-    'consistent_entities',
+    'consistent_elements',
     'consistency',
     'specificity',
     ]
@@ -40,11 +42,14 @@ class TestAnnotatinoMetrics(unittest.TestCase):
 
   def setUp(self):	
     self.annotation_metrics = copy.deepcopy(ANNOTATION_METRICS)
+    self.no_annotation_metrics = sbmate.AnnotationMetrics()
 
   def testInit(self):
     if IGNORE_TEST:
         return
     df = self.annotation_metrics.metrics_df
+    self.assertEqual(self.no_annotations.metrics_df, None)
+    self.assertEqual(self.no_annotation_metrics.metrics_df, None)
 
   def testTwoClasses(self):
     if IGNORE_TEST:
@@ -59,10 +64,10 @@ class TestAnnotatinoMetrics(unittest.TestCase):
   def basicChecks(self, df):
     self.assertEqual(df.shape, (1,6))
     self.assertEqual(df.index[0], BIOMD_12)
-    self.assertEqual(int(df['annotatable_entities']), 20)
-    self.assertEqual(int(df['annotated_entities']), 20)
+    self.assertEqual(int(df['annotatable_elements']), 20)
+    self.assertEqual(int(df['annotated_elements']), 20)
     self.assertEqual(float(df['coverage']), 1.0)
-    self.assertEqual(int(df['consistent_entities']), 19)
+    self.assertEqual(int(df['consistent_elements']), 19)
     self.assertEqual(float(df['consistency']), 0.95)
     self.assertEqual(float(df['specificity']), 0.88)
 
@@ -80,13 +85,35 @@ class TestAnnotatinoMetrics(unittest.TestCase):
     self.checkReport(report=res_report)
     res_df = self.annotation_metrics.getMetrics(MODEL_FILE,
         output="table")
-    res_none = self.annotation_metrics.getMetrics(
-        123, output="table")
-    res_none2 = self.annotation_metrics.getMetrics(
-        [123, 'abc'], output="table")
     self.assertEqual(res_df.shape, (1,6))
-    self.assertEqual(res_none, None)
-    self.assertEqual(res_none2, None)
+    self.assertEqual(int(res_df['annotatable_elements']), 20)
+    self.assertEqual(int(res_df['annotated_elements']), 20)
+    self.assertEqual(float(res_df['coverage']), 1.0)
+    self.assertEqual(int(res_df['consistent_elements']), 19)
+    self.assertEqual(float(res_df['consistency']), 0.95)
+    self.assertEqual(float(res_df['specificity']), 0.88) 
+
+    res_df2 = self.annotation_metrics.getMetrics([MODEL_FILE, MODEL_FILE2], 
+                                                  output="table")
+    self.assertEqual(res_df2.shape, (2,6))
+    self.assertEqual(list(res_df2.columns), METRIC_NAMES)
+    self.assertEqual(list(res_df2.loc[BIOMD_12,:]),
+                     [20, 20, 1.0, 19, 0.95, 0.88])
+    self.assertEqual(list(res_df2.loc[BIOMD_13,:]),
+                     [51, 51, 1.0, 51, 1.00, 0.99])
+    
+    res_report =  self.annotation_metrics.getMetrics(MODEL_FILE,
+        output="report")
+    self.assertEqual(res_report, self.annotation_metrics._getMetricsReport())
+    with self.assertRaises(ValueError) as context: 
+      self.annotation_metrics.getMetrics(123, output="table")
+    with self.assertRaises(ValueError) as context: 
+      self.annotation_metrics.getMetrics([123, 'abc'], output="table")
+
+    with self.assertRaisesRegex(ValueError, "Should be a valid file name."): 
+      self.annotation_metrics.getMetrics(123, output="table")  
+    with self.assertRaisesRegex(ValueError, "Should be a valid file name."): 
+      self.annotation_metrics.getMetrics([123, 'abc'], output="table")  
 
   def checkReport(self, report=None):
     if report is None:
@@ -105,10 +132,10 @@ class TestAnnotatinoMetrics(unittest.TestCase):
       return
     df = self.annotation_metrics.metrics_df
     self.assertEqual(df.shape, (1,6))
-    self.assertEqual(int(df['annotatable_entities']), 20)
-    self.assertEqual(int(df['annotated_entities']), 20)
+    self.assertEqual(int(df['annotatable_elements']), 20)
+    self.assertEqual(int(df['annotated_elements']), 20)
     self.assertEqual(float(df['coverage']), 1.0)
-    self.assertEqual(int(df['consistent_entities']), 19)
+    self.assertEqual(int(df['consistent_elements']), 19)
     self.assertEqual(float(df['consistency']), 0.95)
     self.assertEqual(float(df['specificity']), 0.88)
 

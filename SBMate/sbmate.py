@@ -21,7 +21,7 @@ class AnnotationMetrics(object):
   calculatorDf: dataframe of metrics.
   """
 
-  def __init__(self, model_file, metric_calculator_classes=None):
+  def __init__(self, model_file=None, metric_calculator_classes=None):
     """
     Parameters
     ----------
@@ -29,19 +29,24 @@ class AnnotationMetrics(object):
         Address/name of the .xml model file
     metric_calculator_classes: list-type
     """
-    self.annotations = sa.SortedSBMLAnnotation(file=model_file)
-    if metric_calculator_classes is None:
-      metric_calculator_classes = []
-    metric_calculator_classes.append(MetricCalculator)
-    # Calculate a DataFrame for each metric calculator
-    dfs = []
-    # in case model_file is given as a path, get the last file name
-    index_model_name = model_file.split('/')[-1]
-    for cls in metric_calculator_classes:
-      calculator = cls(annotations=self.annotations, model_name=index_model_name)
-      dfs.append(calculator.calculate())
-    # Merge the DataFrames
-    self.metrics_df = pd.concat(dfs, axis=1)
+    # model file can take None
+    if model_file is None:
+      self.annotations = None
+      self.metrics_df = None
+    else:
+      self.annotations = sa.SortedSBMLAnnotation(file=model_file)
+      if metric_calculator_classes is None:
+        metric_calculator_classes = []
+      metric_calculator_classes.append(MetricCalculator)
+      # Calculate a DataFrame for each metric calculator
+      dfs = []
+      # in case model_file is given as a path, get the last file name
+      index_model_name = model_file.split('/')[-1]
+      for cls in metric_calculator_classes:
+        calculator = cls(annotations=self.annotations, model_name=index_model_name)
+        dfs.append(calculator.calculate())
+      # Merge the DataFrames
+      self.metrics_df = pd.concat(dfs, axis=1)
 
   def _getMetricsReport(self):
     """
@@ -81,19 +86,22 @@ class AnnotationMetrics(object):
         Return None if input type is incorrect.
     """
 
-    # FIXME: Should you return None or throw an exception?
+    # Throws ValueError if the file argument type is incorrect. 
+    flag = False
     if isinstance(file, str):
       file_list = [file]
     elif isinstance(file, list):
       if all([isinstance(one_file, str) for one_file in file]):
         file_list = file
       else:
-        return None
+        flag = True
     else:
-      return None
+      flag = True
+    if flag:
+      raise ValueError("Should be a valid file name.")
 
-    annotation_metrics_list = [cls(model_file=one_file)
-        for one_file in file_list]
+    annotation_metrics_list = [cls(model_file=one_file) 
+                               for one_file in file_list]
     if output == "report":
       res_list = [m._getMetricsReport() for m in annotation_metrics_list]
       res = ('\n').join(res_list)
