@@ -91,6 +91,15 @@ class TestAnnotatinoMetrics(unittest.TestCase):
     self.assertEqual(int(res_df['consistent_elements']), 19)
     self.assertEqual(float(res_df['consistency']), 0.95)
     self.assertEqual(float(res_df['specificity']), 0.88) 
+
+    res_df2 = self.annotation_metrics.getMetrics([BIOMD_12, BIOMD_13], 
+                                                  output="table")
+    self.assertEqual(res_df2.shape, (2,6))
+    self.assertEqual(list(res_df2.columns), METRIC_NAMES)
+    self.assertEqual(list(res_df2.loc[BIOMD_12,:]),
+                     [20, 20, 1.0, 19, 0.95, 0.88])
+    self.assertEqual(list(res_df2.loc[BIOMD_13,:]),
+                     [51, 51, 1.0, 51, 1.00, 0.99])
     
     res_report =  self.annotation_metrics.getMetrics(MODEL_FILE,
         output="report")
