@@ -29,3 +29,10 @@ Another option is to create a pandas DataFrame, as below:
 And you will get the dataframe. 
 
 <img src="https://github.com/woosubs/SBMate/blob/main/png/result_table.png" width="800"/>
+
+## Adding Additional Metrics
+You can add additional metrics by creating a class that calculates metrics.
+Metric values are contained in a ``pandas`` ``DataFrame``.
+See ``metric_calculator.py`` to see how to write a class that calculates metrics.
+When you construct ``AnnotationMetrics``, you will assign a value to the keyword argument ``metric_calculator_classes``
+of the constructor.
