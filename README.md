@@ -4,17 +4,17 @@
 Systems Biology Model AnnoTation Evaluator
 
 ## Overview
-``SBMate`` evaluates the quality of annotations in SBML model entities, especially libsbml.Model, libsbml.Species, libsbml.Compartment, and libsbml.Reaction. Currently, it examines annotationos from five knowledge resources, CHEBI, GO, KEGG, SBO, and UNIPROT. 
+``SBMate`` evaluates the quality of annotations in SBML model elements, especially libsbml.Model, libsbml.Species, libsbml.Compartment, and libsbml.Reaction. Currently, it examines annotations from five knowledge resources, CHEBI, GO, KEGG, SBO, and UNIPROT. 
  
 SBMate calculates three metrics: 
-1. Coverage checks how many entities of the above four types (model, reaction, species, and compartment) are actually annotated. 
+1. Coverage checks how many model elements of the above four types (model, reaction, species, and compartment) are actually annotated. 
 2. Consistency computes how many of such annotated entities has proper annotation. For example, a reaction object should not have a GO cellular component term (GO:0005575 or its children). SBMate identifies such instances and calculates the proprotion of model entities whose annotations are consistent. 
-3. Finally, specificity is a measure of how 'precise' such consistent annotations are. This is obtained by utilizing the hierarchical structures of knowledge resource terms, such as the directed acyclic graphs of SBO and GO. 
+3. Finally, specificity is a measure of how 'precise' such consistent annotations are. This is obtained by utilizing the hierarchical structures of knowledge resource terms, such as the directed acyclic graphs of SBO, GO and CHEBI. 
 
 More detailed discussions can be found in our manuscript (in preparation). 
 
 ## Example
-It is quite easy to use SBMate, as there is just one main main method, sbmate.getMetrics().
+It is quite easy to use SBMate as there is just one main method, ``sbmate.AnnotationMetrics.getMetrics``.
 
 <img src="https://github.com/woosubs/SBMate/blob/main/png/run_sbmate.png" width="800"/>
 
