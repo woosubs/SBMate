@@ -16,19 +16,19 @@ More detailed discussions can be found in our manuscript (in preparation).
 ## Example
 It is quite easy to use SBMate as there is just one main method, ``sbmate.AnnotationMetrics.getMetrics``.
 
-<img src="https://github.com/woosubs/SBMate/blob/main/png/run_sbmate.png" width="800"/>
+<img src="https://github.com/woosubs/SBMate/raw/main/png/run_sbmate.png" width="800"/>
 
 By default, SBMate produces a report summarizing the three scores:
 
-<img src="https://github.com/woosubs/SBMate/blob/main/png/result_report.png" width="800"/>
+<img src="https://github.com/woosubs/SBMate/raw/main/png/result_report.png" width="800"/>
 
 Another option is to create a pandas DataFrame, as below:
 
-<img src="https://github.com/woosubs/SBMate/blob/main/png/run_sbmate_table.png" width="800"/>
+<img src="https://github.com/woosubs/SBMate/raw/main/png/run_sbmate_table.png" width="800"/>
 
 And you will get the dataframe. 
 
-<img src="https://github.com/woosubs/SBMate/blob/main/png/result_table.png" width="800"/>
+<img src="https://github.com/woosubs/SBMate/raw/main/png/result_table.png" width="800"/>
 
 ## Adding Additional Metrics
 You can add additional metrics by creating a class that calculates metrics.
