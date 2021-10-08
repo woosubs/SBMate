@@ -16,7 +16,7 @@ INSTALL_REQUIRES = [
 def doSetup(install_requires):
   setup(
       name='SBMate',
-      version='1.1.1',
+      version='1.1.2',
       author='Woosub Shin',
       author_email='woosubs@umich.edu',
       packages=find_packages(exclude=['tests', 'notebooks']),
