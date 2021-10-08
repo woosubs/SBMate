@@ -91,10 +91,10 @@ class MetricCalculator(object):
     else:
       len_consistent_entities = None
     specificity = self._getSpecificity(consistent_entities)
-    entities_Df = self.mkDataframe({'annotatable_entities': len_annotatable_entities})
-    coverage_Df = self.mkDataframe({'annotated_entities':len_annotated_entities,
+    entities_Df = self.mkDataframe({'annotatable_elements': len_annotatable_entities})
+    coverage_Df = self.mkDataframe({'annotated_elements':len_annotated_entities,
                                     'coverage': coverage})
-    consistency_Df = self.mkDataframe({'consistent_entities':len_consistent_entities,
+    consistency_Df = self.mkDataframe({'consistent_elements':len_consistent_entities,
                                        'consistency': consistency})
     specificity_Df = self.mkDataframe({'specificity': specificity})
 
