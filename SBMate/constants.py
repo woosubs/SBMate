@@ -12,7 +12,7 @@ PROJECT_NAME = "SBMate"
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 # one level higher
 PROJECT_DIR = os.path.dirname(PROJECT_DIR)
-RESOURCE_DIR = os.path.join(PROJECT_DIR, "knowledge_resources")
+RESOURCE_DIR = os.path.join(PROJECT_DIR, "SBMate/knowledge_resources")
 TEST_DIR = os.path.join(PROJECT_DIR, "tests")
 
 

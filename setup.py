@@ -16,8 +16,8 @@ INSTALL_REQUIRES = [
 def doSetup(install_requires):
   setup(
       name='SBMate',
-      version='1.1.2',
-      author='Woosub Shin',
+      version='1.1.3',
+      author='Woosub Shin, Joseph L. Hellerstein',
       author_email='woosubs@umich.edu',
       packages=find_packages(exclude=['tests', 'notebooks']),
       url='https://github.com/woosubs/SBMate',
@@ -27,11 +27,6 @@ def doSetup(install_requires):
       package_dir={'SBMate': 'SBMate'},
       install_requires=install_requires,
       include_package_data=True,
-      data_files=[('knowledge_resources', 
-                   ['knowledge_resources/chebi_graph.gpickle',
-                    'knowledge_resources/go_graph.gpickle',
-                    'knowledge_resources/sbo_graph.gpickle'
-                   ])],
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Intended Audience :: Developers',      # Define that your audience are developers
