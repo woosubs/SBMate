@@ -56,6 +56,26 @@ class RawSBMLAnnotation(object):
     self.sbo = [self.getSBOAnnotation(ele) for ele in model_objects]
     self.str_annotation = [self.getOntAnnotation(ele) for ele in model_objects]
 
+  def formatSBO(self, sbo_num):
+    """
+    Reformat an SBO term into str.
+    Return None if -1 (not provided).
+
+    Parameters
+    ----------
+    sbo_num: int
+
+    Returns
+    -------
+    '': str/None
+        Return None if sbo term is -1 
+        (i.e.,  not provided)
+    """
+    if sbo_num == -1:
+      return None
+    else:
+      return 'SBO:' + format(sbo_num, '07d')
+
   def getSBOAnnotation(self, sbml_object):
     """
     Returns a proper SBO term (e.g., SBO:0000290) 
@@ -70,29 +90,9 @@ class RawSBMLAnnotation(object):
     -------
     '': namedtuple 'ObjectAnnotation': (id, type, str/None)
     """
-    def formatSBO(sbo_num):
-      """
-      Reformat an SBO term into str.
-      Return None if -1 (not provided).
-
-      Parameters
-      ----------
-      sbo_num: int
-
-      Returns
-      -------
-      '': str/None
-          Return None if sbo term is -1 
-          (i.e.,  not provided)
-      """
-      if sbo_num == -1:
-        return None
-      else:
-        return 'SBO:' + format(sbo_num, '07d')
-    #
     input_id = sbml_object.getId()
     input_type = type(sbml_object)
-    input_sbo = formatSBO(sbml_object.sbo_term)
+    input_sbo = self.formatSBO(sbml_object.sbo_term)
     #
     return ObjectAnnotation(input_id, input_type, input_sbo)
 
@@ -137,9 +137,6 @@ class RawSBMLAnnotation(object):
       combined_str['is'] = is_str_match
     if isVersionOf_str_match:
       combined_str['isVersionOf'] = isVersionOf_str_match
-    # combined_str = is_str + isVersionOf_str
-    # if combined_str == '':
-    #   combined_str = None
     return ObjectAnnotation(input_id, input_type, combined_str)
 
 
