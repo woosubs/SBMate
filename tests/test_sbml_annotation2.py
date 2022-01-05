@@ -86,31 +86,22 @@ class TestSBMLAnnotation(unittest.TestCase):
     self.assertEqual(px_annotation['object_id'],  'PX')
     self.assertEqual(px_annotation['object_type'], libsbml.Species)
 
-  # def testGetAnnotationDictByOntology(self):
-  #   pass
+  def testGetAnnotationDictByOntology(self):
+    model_annotation = self.sbml_annotation.getAnnotationDictByQualifier('BIOMD0000000012')
+    px_annotation = self.sbml_annotation.getAnnotationDictByQualifier('PX')
+    model_anot_by_ont = self.sbml_annotation.getAnnotationDictByOntology(model_annotation)
+    px_anot_by_ont = self.sbml_annotation.getAnnotationDictByOntology(px_annotation)
+    self.assertEqual(model_anot_by_ont['go'], ['GO:0040029'])
+    self.assertEqual(model_anot_by_ont['object_id'], 'BIOMD0000000012')
+    self.assertEqual(model_anot_by_ont['object_type'], libsbml.Model)
+    self.assertEqual(px_anot_by_ont['sbo'], ['SBO:0000252'])
+    self.assertEqual(px_anot_by_ont['uniprot'], ['P03023'])
+    self.assertEqual(px_anot_by_ont['object_id'], 'PX')
+    self.assertEqual(px_anot_by_ont['object_type'], libsbml.Species)
 
-  # def testGetKnowledgeResourceTuple(self):
-  #   pass
-
-  # def testGetAnnotationDict(self):
-  #   model_annotation = self.sbml_annotation.getAnnotationDict('BIOMD0000000012')
-  #   self.assertEqual(model_annotation['go'], ['GO:0040029'])
-  #   self.assertEqual(model_annotation['object_id'], 'BIOMD0000000012')
-  #   self.assertEqual(model_annotation['object_type'], libsbml.Model)
-  #   self.assertTrue(model_annotation['sbo'] is None)
-  #   self.assertTrue(model_annotation['chebi'] is None)
-  #   self.assertTrue(model_annotation['kegg_species'] is None)
-  #   self.assertTrue(model_annotation['kegg_process'] is None)
-  #   self.assertTrue(model_annotation['uniprot'] is None)
-  #   px_annotation = self.sbml_annotation.getAnnotationDict('PX')
-  #   self.assertEqual(px_annotation['sbo'], ['SBO:0000252'])
-  #   self.assertEqual(px_annotation['uniprot'], ['P03023'])    
-
-#   def testGetKnowledgeResourceTuple(self):
-#     one_tuple_list = self.sbml_annotation.getKnowledgeResourceTuple(input_annotation=self.input_annotation)
-#     self.assertEqual(one_tuple_list, [('obo.go', 'GO:0006402')])
-#     self.assertTrue(self.sbml_annotation.getKnowledgeResourceTuple(None) is None)
-
+  def testGetKnowledgeResourceTuple(self):
+    self.assertEqual(self.sbml_annotation.getKnowledgeResourceTuple(self.input_annotation), [('obo.go', 'GO:0006402')])
+    self.assertEqual(self.sbml_annotation.getKnowledgeResourceTuple('None'), [])
 
 if __name__ == '__main__':
   unittest.main()
