@@ -52,6 +52,12 @@ class DAGAnalyzer(object):
       Dictionary, mapping each identifier: its root.
   consistent: bool
       Bool determining whether the entity-object is consistent.   
+  weight_dict: dict
+      Dictionar {term_id: weight} to adjust
+      for different qualifiers when calculating specificity. 
+      'is' has 1.0, and 'isVersionOf' has 0.5
+      Based on suppl. material of a paper on semanticSBML
+      https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3159965/ 
 
   Methods
   -------
@@ -68,7 +74,7 @@ class DAGAnalyzer(object):
   """
 
   def __init__(self, term_id, ontology,
-               object_type):
+               object_type, qualifier_dict):
     """
     Parameters
     ----------
@@ -79,6 +85,8 @@ class DAGAnalyzer(object):
         Should be one of {'go', 'sbo', 'chebi'}.
     object_type: libsbml.AutoProperty
         Type of model entity. For example, libsbml.Reaction
+    qualifier_dict: dict
+        Dictionary of Qualifier {ontology_id: qualifier}
     """
     self.term_id = term_id
     self.ontology = ontology
@@ -87,6 +95,10 @@ class DAGAnalyzer(object):
     self.possible_roots = ONT_TO_ROOT[self.ontology]
     self.term_to_root = None
     self.consistent = self.getConsistency(inp_term=self.term_id)
+    # create a dictionary of {term_id: weight}
+    self.weight_dict = dict()
+    for one_k in qualifier_dict.keys():
+      self.weight_dict[one_k] = cn.WEIGHT_QUALIFIER[qualifier_dict[one_k]]
 
   def findRoot(self, inp_term):
     """
@@ -201,10 +213,9 @@ class DAGAnalyzer(object):
     else:
       inp_list = inp_term
     if set(inp_list) <= self.term_to_root.keys():
-      res = [self.getOneTermSpecificity(val) for val in inp_list]
+      res = [self.getOneTermSpecificity(val)*self.weight_dict[val] for val in inp_list]
       return np.mean(res)
     else:
-      print("Calculate consistency first!")
       return None
 
 

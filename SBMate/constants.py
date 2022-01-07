@@ -145,8 +145,9 @@ DAG_ROOT_MAP = {"go":GO_ROOT_DICT,
                 "chebi":CHEBI_ROOT_DICT}
 
 
-
-
+# Qualifiers for weighting
+QUALIFIERS = ['is', 'isVersionOf']
+WEIGHT_QUALIFIER = {'is': 1.0, 'isVersionOf': 0.5}
 
 
 

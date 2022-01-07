@@ -31,7 +31,7 @@ class MetricCalculator(object):
 
   Attributes
   ----------
-  annotations: sbml_annotation.SortedSBMLAnnotation 
+  annotations: sbml_annotation.SBMLAnnotation 
       Sorted annotations for each knowledge resource.
   annotated_entities: str-list
       List of model entity names that are annotated.
@@ -58,7 +58,7 @@ class MetricCalculator(object):
     """
     Parameters
     ----------
-    annotations: sbml_annotation.SortedSBMLAnnotation 
+    annotations: sbml_annotation.SBMLAnnotation 
         Sorted annotations for the five knowledge resources.
     model: str
         Name of the model; will be index of the dataframe
@@ -117,6 +117,31 @@ class MetricCalculator(object):
     """
     return pd.DataFrame(score_info, index=[self.model_name])
 
+  # a new method! Used in _getConsistency
+  def getQualifierDict(self, input_qual_dict):
+    """
+    Using the input dictionary {qualifier: terms},
+    create a dictionary of {term: qualifier}
+  
+    Parameters
+    ----------
+    input_qual_dict: dict 
+        Dictionary of {qualifier: terms}
+
+    Returns
+    -------
+    qual_dict: dict
+        Dictionary of {term: qualifier}
+    """
+    qual_dict = dict()
+    # currently one_qual is either 'is' or 'isVersionOf'
+    for one_qual in cn.QUALIFIERS:
+      if one_qual in input_qual_dict.keys():
+        # list of tuples ('ontology', 'term')
+        one_str_list = input_qual_dict[one_qual]
+        for one_tuple in one_str_list:
+          qual_dict[one_tuple[1]] = one_qual
+    return qual_dict
 
   def _getConsistency(self, annotated_entities):
     """
@@ -145,10 +170,12 @@ class MetricCalculator(object):
     consistent_dicts = dict()
     for anot_key in annotated_entities:
       one_anot = self.annotations.annotations[anot_key]
-      # annotated entities
+      one_anot_qualifier = self.annotations.annotation_by_qualifier[anot_key]
+      term_qualifier_map = self.getQualifierDict(one_anot_qualifier)
       one_entity_onts = [ANALYZER_DICT[key](term_id=one_anot[key],
                                             ontology=key,
-                                            object_type=one_anot['object_type']) \
+                                            object_type=one_anot['object_type'],
+                                            qualifier_dict=term_qualifier_map) \
                          for key in ANALYZER_DICT if one_anot[key]]
 
       # if consistent for all ontologies, update list of consistent objects

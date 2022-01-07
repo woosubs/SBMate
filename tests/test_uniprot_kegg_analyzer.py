@@ -16,15 +16,17 @@ BIOMD_13 = 'BIOMD0000000013.xml'
 class TestNonDAGAnalyzer(unittest.TestCase):
 
   def setUp(self):
-    self.biomd12 = sa.SortedSBMLAnnotation(file=os.path.join(cn.TEST_DIR, BIOMD_12))
+    self.biomd12 = sa.SBMLAnnotation(file=os.path.join(cn.TEST_DIR, BIOMD_12))
     self.px_annotation = self.biomd12.annotations['PX']
     self.px_analyzer = uka.NonDAGAnalyzer(term_id=['P03023'],
                                           ontology='uniprot',
-                                          object_type=libsbml.Species)
+                                          object_type=libsbml.Species,
+                                          qualifier_dict={'P03023': 'is'})
     self.x_annotation = self.biomd12.annotations['X']
     self.x_analyzer = uka.NonDAGAnalyzer(term_id=['C00046'],
                                          ontology='kegg_species',
-                                         object_type=libsbml.Species)
+                                         object_type=libsbml.Species,
+                                         qualifier_dict={'C00046': 'isVersionOf'})
 
 
   def testGetOneTermConsistency(self):
@@ -42,10 +44,11 @@ class TestNonDAGAnalyzer(unittest.TestCase):
 
   def testGetSpecificity(self):
   	wrong_analyzer = uka.NonDAGAnalyzer(term_id=['GO:12345'],
-                                         ontology='kegg_species',
-                                         object_type=libsbml.Species)
+                                        ontology='kegg_species',
+                                        object_type=libsbml.Species,
+                                        qualifier_dict={'GO:12345': 'is'})
   	self.assertEqual(wrong_analyzer.getSpecificity('GO:12345'), None)
-  	self.assertEqual(self.x_analyzer.getSpecificity('C00046'), 1.0)
+  	self.assertEqual(self.x_analyzer.getSpecificity('C00046'), 0.5)
   	self.assertEqual(self.px_analyzer.getSpecificity('P03023'), 1.0)
 
 

@@ -20,8 +20,8 @@ BIOMD_970 = 'BIOMD0000000970.xml'
 class TestMetricCalculator(unittest.TestCase):
 
   def setUp(self):	
-    self.one_annotation = sa.SortedSBMLAnnotation(file=os.path.join(cn.TEST_DIR, BIOMD_12))
-    self.two_annotation = sa.SortedSBMLAnnotation(file=os.path.join(cn.TEST_DIR, BIOMD_970))
+    self.one_annotation = sa.SBMLAnnotation(file=os.path.join(cn.TEST_DIR, BIOMD_12))
+    self.two_annotation = sa.SBMLAnnotation(file=os.path.join(cn.TEST_DIR, BIOMD_970))
     self.calculator = mc.MetricCalculator(annotations=self.one_annotation, model_name=BIOMD_12)
     self.none_calculator = mc.MetricCalculator(annotations=self.two_annotation, model_name=BIOMD_970)
 
@@ -34,7 +34,7 @@ class TestMetricCalculator(unittest.TestCase):
     self.assertEqual(float(metrics_df['coverage']), 1.0)
     self.assertEqual(int(metrics_df['consistent_elements']), 19)
     self.assertEqual(float(metrics_df['consistency']), 0.95)
-    self.assertEqual(float(metrics_df['specificity']), 0.88)
+    self.assertEqual(float(metrics_df['specificity']), 0.70)
     #
     non_metrics_df = self.none_calculator.calculate()
     self.assertEqual(non_metrics_df.index[0], BIOMD_970)
@@ -78,7 +78,7 @@ class TestMetricCalculator(unittest.TestCase):
     annotated_entities, coverage = self.calculator._getCoverage()
     consistent_entities, consistency = self.calculator._getConsistency(annotated_entities)
     specificity = self.calculator._getSpecificity(consistent_entities) 
-    self.assertEqual(specificity, 0.88)
+    self.assertEqual(specificity, 0.70)
     #
     none_annotated_entities, none_coverage = self.none_calculator._getCoverage()
     none_consistent_entities, none_consistency = self.none_calculator._getConsistency(none_annotated_entities)

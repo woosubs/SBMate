@@ -1,4 +1,3 @@
-# test_sbml_annotation.py
 # testing sbml_annotation.py
 # python -m unittest test_sbml_annotation
 
@@ -25,67 +24,83 @@ class TestRawSBMLAnnotation(unittest.TestCase):
     self.incompelte_sbml_model = incomplete_document.getModel()
     self.incomplete_raw_sbml_annotation = sa.RawSBMLAnnotation(input_file=os.path.join(cn.TEST_DIR, BIOMD_15))
 
+  def testFormatSBO(self):
+    self.assertEqual(self.raw_sbml_annotation.formatSBO(-1), None)
+    self.assertEqual(self.raw_sbml_annotation.formatSBO(179), 'SBO:0000179')
+
   def testGetSBOAnnotation(self):
   	# testing annotations obtained from sbo_term
     reaction1_sbo_annotation = self.raw_sbml_annotation.getSBOAnnotation(self.sbml_model.getReaction('Reaction1'))
-    self.assertEqual(reaction1_sbo_annotation[0], 'Reaction1')
-    self.assertEqual(reaction1_sbo_annotation[1], libsbml.Reaction)
-    self.assertEqual(reaction1_sbo_annotation[2], 'SBO:0000179')
+    self.assertEqual(reaction1_sbo_annotation.id, 'Reaction1')
+    self.assertEqual(reaction1_sbo_annotation.object_type, libsbml.Reaction)
+    self.assertEqual(reaction1_sbo_annotation.annotation, 'SBO:0000179')
     px_sbo_annotation = self.raw_sbml_annotation.getSBOAnnotation(self.sbml_model.getSpecies('PX'))
-    self.assertEqual(px_sbo_annotation[0], 'PX')
-    self.assertEqual(px_sbo_annotation[1], libsbml.Species)
-    self.assertEqual(px_sbo_annotation[2], 'SBO:0000252')
+    self.assertEqual(px_sbo_annotation.id, 'PX')
+    self.assertEqual(px_sbo_annotation.object_type, libsbml.Species)
+    self.assertEqual(px_sbo_annotation.annotation, 'SBO:0000252')
     # case when SBO doesn't exist
     no_sbo_annotation = self.incomplete_raw_sbml_annotation.getSBOAnnotation(self.incompelte_sbml_model.getSpecies('ATP'))
-    self.assertEqual(no_sbo_annotation[0], 'ATP')
-    self.assertEqual(no_sbo_annotation[1], libsbml.Species)
-    self.assertEqual(no_sbo_annotation[2], None)
+    self.assertEqual(no_sbo_annotation.id, 'ATP')
+    self.assertEqual(no_sbo_annotation.object_type, libsbml.Species)
+    self.assertEqual(no_sbo_annotation.annotation, None)
 
   def testGetOntAnnotation(self):
-  	# testing from getAnnotationString()
+    # testing from getAnnotationString()
     reaction1_annotation = self.raw_sbml_annotation.getOntAnnotation(self.sbml_model.getReaction('Reaction1'))
-    reaction1_str_annotation = '<bqbiol:isVersionOf>\n  <rdf:Bag>\n    <rdf:li rdf:resource="http://identifiers.org/obo.go/GO:0006402"/>\n  </rdf:Bag>\n</bqbiol:isVersionOf>'
-    self.assertEqual(reaction1_annotation[0], 'Reaction1')
-    self.assertEqual(reaction1_annotation[1], libsbml.Reaction)
-    self.assertEqual(reaction1_annotation[2], reaction1_str_annotation)
+    reaction1_str_annotation = '<bqbiol:isVersionOf>\n        <rdf:Bag>\n          '
+    reaction1_str_annotation = reaction1_str_annotation + '<rdf:li rdf:resource="http://identifiers.org/obo.go/GO:0006402"/>\n        </rdf:Bag>\n      </bqbiol:isVersionOf>'
+    self.assertEqual(reaction1_annotation.id, 'Reaction1')
+    self.assertEqual(reaction1_annotation.object_type, libsbml.Reaction)
+    self.assertEqual(reaction1_annotation.annotation['isVersionOf'][0], reaction1_str_annotation)
     # testing for Species
     px_annotation = self.raw_sbml_annotation.getOntAnnotation(self.sbml_model.getSpecies('PX'))
-    px_str_annotation = '<bqbiol:is>\n  <rdf:Bag>\n    <rdf:li rdf:resource="http://identifiers.org/uniprot/P03023"/>\n  </rdf:Bag>\n</bqbiol:is>'
-    self.assertEqual(px_annotation[0], 'PX')
-    self.assertEqual(px_annotation[1], libsbml.Species)
-    self.assertEqual(px_annotation[2], px_str_annotation)
+    px_str_annotation = '<bqbiol:is>\n        <rdf:Bag>\n          <rdf:li rdf:resource="http://identifiers.org/uniprot/P03023"/>\n        </rdf:Bag>\n      </bqbiol:is>'
+    self.assertEqual(px_annotation.id, 'PX')
+    self.assertEqual(px_annotation.object_type, libsbml.Species)
+    self.assertEqual(px_annotation.annotation['is'][0], px_str_annotation)
     # case when string annotation doesn't exist
     no_ont_annotation = self.incomplete_raw_sbml_annotation.getOntAnnotation(self.incompelte_sbml_model.getSpecies('ATP'))
-    self.assertEqual(no_ont_annotation[0], 'ATP')
-    self.assertEqual(no_ont_annotation[1], libsbml.Species)
-    self.assertEqual(no_ont_annotation[2], None) 
+    self.assertEqual(no_ont_annotation.id, 'ATP')
+    self.assertEqual(no_ont_annotation.object_type, libsbml.Species)
+    self.assertEqual(no_ont_annotation.annotation, {}) 
 
 
-class TestSortedSBMLAnnotation(unittest.TestCase):
+class TestSBMLAnnotation(unittest.TestCase):
 
   def setUp(self):
-    self.sbml_annotation = sa.SortedSBMLAnnotation(file=os.path.join(cn.TEST_DIR, BIOMD_12))
+    self.sbml_annotation = sa.SBMLAnnotation(file=os.path.join(cn.TEST_DIR, BIOMD_12))
     self.input_annotation = '<bqbiol:isVersionOf>\n  <rdf:Bag>\n    <rdf:li rdf:resource="http://identifiers.org/obo.go/GO:0006402"/>\n  </rdf:Bag>\n</bqbiol:isVersionOf>'
 
-  def testGetAnnotationDict(self):
-    model_annotation = self.sbml_annotation.getAnnotationDict('BIOMD0000000012')
-    self.assertEqual(model_annotation['go'], ['GO:0040029'])
+  def testGetAnnotationDictByQualifier(self):
+    model_annotation = self.sbml_annotation.getAnnotationDictByQualifier('BIOMD0000000012')
+    self.assertFalse('is' in model_annotation.keys())
     self.assertEqual(model_annotation['object_id'], 'BIOMD0000000012')
     self.assertEqual(model_annotation['object_type'], libsbml.Model)
-    self.assertTrue(model_annotation['sbo'] is None)
-    self.assertTrue(model_annotation['chebi'] is None)
-    self.assertTrue(model_annotation['kegg_species'] is None)
-    self.assertTrue(model_annotation['kegg_process'] is None)
-    self.assertTrue(model_annotation['uniprot'] is None)
-    px_annotation = self.sbml_annotation.getAnnotationDict('PX')
-    self.assertEqual(px_annotation['sbo'], ['SBO:0000252'])
-    self.assertEqual(px_annotation['uniprot'], ['P03023'])    
+    self.assertEqual(model_annotation['isVersionOf'],  [('obo.go', 'GO:0040029')])
+    #
+    px_annotation = self.sbml_annotation.getAnnotationDictByQualifier('PX')
+    self.assertFalse('isVersionOf' in px_annotation.keys())
+    self.assertTrue(('uniprot', 'P03023') in px_annotation['is'])
+    self.assertTrue(('sbo', 'SBO:0000252') in px_annotation['is'])
+    self.assertEqual(px_annotation['object_id'],  'PX')
+    self.assertEqual(px_annotation['object_type'], libsbml.Species)
+
+  def testGetAnnotationDictByOntology(self):
+    model_annotation = self.sbml_annotation.getAnnotationDictByQualifier('BIOMD0000000012')
+    px_annotation = self.sbml_annotation.getAnnotationDictByQualifier('PX')
+    model_anot_by_ont = self.sbml_annotation.getAnnotationDictByOntology(model_annotation)
+    px_anot_by_ont = self.sbml_annotation.getAnnotationDictByOntology(px_annotation)
+    self.assertEqual(model_anot_by_ont['go'], ['GO:0040029'])
+    self.assertEqual(model_anot_by_ont['object_id'], 'BIOMD0000000012')
+    self.assertEqual(model_anot_by_ont['object_type'], libsbml.Model)
+    self.assertEqual(px_anot_by_ont['sbo'], ['SBO:0000252'])
+    self.assertEqual(px_anot_by_ont['uniprot'], ['P03023'])
+    self.assertEqual(px_anot_by_ont['object_id'], 'PX')
+    self.assertEqual(px_anot_by_ont['object_type'], libsbml.Species)
 
   def testGetKnowledgeResourceTuple(self):
-    one_tuple_list = self.sbml_annotation.getKnowledgeResourceTuple(input_annotation=self.input_annotation)
-    self.assertEqual(one_tuple_list, [('obo.go', 'GO:0006402')])
-    self.assertTrue(self.sbml_annotation.getKnowledgeResourceTuple(None) is None)
-
+    self.assertEqual(self.sbml_annotation.getKnowledgeResourceTuple(self.input_annotation), [('obo.go', 'GO:0006402')])
+    self.assertEqual(self.sbml_annotation.getKnowledgeResourceTuple('None'), [])
 
 if __name__ == '__main__':
   unittest.main()
