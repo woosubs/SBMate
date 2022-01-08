@@ -1,4 +1,5 @@
-# sbml_annotation.py
+# sbml_annotation2.py
+# updated versino of sbml_annotation.py
 
 import collections
 import libsbml
@@ -55,6 +56,26 @@ class RawSBMLAnnotation(object):
     self.sbo = [self.getSBOAnnotation(ele) for ele in model_objects]
     self.str_annotation = [self.getOntAnnotation(ele) for ele in model_objects]
 
+  def formatSBO(self, sbo_num):
+    """
+    Reformat an SBO term into str.
+    Return None if -1 (not provided).
+
+    Parameters
+    ----------
+    sbo_num: int
+
+    Returns
+    -------
+    '': str/None
+        Return None if sbo term is -1 
+        (i.e.,  not provided)
+    """
+    if sbo_num == -1:
+      return None
+    else:
+      return 'SBO:' + format(sbo_num, '07d')
+
   def getSBOAnnotation(self, sbml_object):
     """
     Returns a proper SBO term (e.g., SBO:0000290) 
@@ -69,37 +90,18 @@ class RawSBMLAnnotation(object):
     -------
     '': namedtuple 'ObjectAnnotation': (id, type, str/None)
     """
-    def formatSBO(sbo_num):
-      """
-      Reformat an SBO term into str.
-      Return None if -1 (not provided).
-
-      Parameters
-      ----------
-      sbo_num: int
-
-      Returns
-      -------
-      '': str/None
-          Return None if sbo term is -1 
-          (i.e.,  not provided)
-      """
-      if sbo_num == -1:
-        return None
-      else:
-        return 'SBO:' + format(sbo_num, '07d')
-    #
     input_id = sbml_object.getId()
     input_type = type(sbml_object)
-    input_sbo = formatSBO(sbml_object.sbo_term)
+    input_sbo = self.formatSBO(sbml_object.sbo_term)
     #
     return ObjectAnnotation(input_id, input_type, input_sbo)
-    
+
+
   def getOntAnnotation(self, sbml_object):
     """
     Parse string and return string annotation,
     marked as <bqbiol:is> or <bqbiol:isVersionOf>.
-    If neither exists, return None/
+    If neither exists, return None as annotation.
 
     Parameters
     ----------
@@ -122,22 +124,23 @@ class RawSBMLAnnotation(object):
       is_str_match_filt = [s.replace("      ", "") for s in is_str_match]
       is_str = '\n'.join(is_str_match_filt)
 
-    is_VersionOf_str_match = re.findall('<bqbiol:isVersionOf[^a-zA-Z].*?<\/bqbiol:isVersionOf>',
+    isVersionOf_str_match = re.findall('<bqbiol:isVersionOf[^a-zA-Z].*?<\/bqbiol:isVersionOf>',
                                         input_annotation,
                                         flags=re.DOTALL)
     #
-    if len(is_VersionOf_str_match) > 0:
-      is_VersionOf_str_match_filt = [s.replace("      ", "") for s in is_VersionOf_str_match]
+    if len(isVersionOf_str_match) > 0:
+      is_VersionOf_str_match_filt = [s.replace("      ", "") for s in isVersionOf_str_match]
       isVersionOf_str = '\n'.join(is_VersionOf_str_match_filt)
     #
-    combined_str = is_str + isVersionOf_str
-    if combined_str == '':
-      combined_str = None
+    combined_str = dict()
+    if is_str_match:
+      combined_str['is'] = is_str_match
+    if isVersionOf_str_match:
+      combined_str['isVersionOf'] = isVersionOf_str_match
     return ObjectAnnotation(input_id, input_type, combined_str)
 
 
-
-class SortedSBMLAnnotation(object):
+class SBMLAnnotation(object):
   """
   SBML annotations sorted by type.
   SBO, GO, KEGG, CHEBI, UNIPROT. 
@@ -163,18 +166,18 @@ class SortedSBMLAnnotation(object):
 
   def __init__(self, file, knowledge_resources=cn.KNOWLEDGE_TYPES_REP):
     # For now, use default biomodel objects.
-    self.raw_annotations = RawSBMLAnnotation(input_file=file)
-    self.object_ids = [ele.id for ele in self.raw_annotations.str_annotation]
-    self.annotations = {one_id:self.getAnnotationDict(one_id) for one_id in self.object_ids}
+    self.raw_annotation = RawSBMLAnnotation(input_file=file)
+    self.object_ids = [ele.id for ele in self.raw_annotation.str_annotation]
+    self.annotation_by_qualifier = {one_id:self.getAnnotationDictByQualifier(one_id) for one_id in self.object_ids}
+    self.annotations = {one_id:self.getAnnotationDictByOntology(self.annotation_by_qualifier[one_id]) for one_id in self.object_ids}
 
-  def getAnnotationDict(self, input_id):
+  def getAnnotationDictByQualifier(self, input_id):
     """
     Get dictionary of annotations for an object,
-    where the key is object id
-    and the items are each annotation
-    per category. 
-    Returns a nested dictionary
-    for each object. 
+    where the key is ['is', 'isVersionOf']
+    and the items are annotation tuples
+    SBO term is treated as under 'is' qualifier.
+    Dictionary indludes entity name & lisbsbml type. 
 
     Parameters
     ----------
@@ -183,59 +186,58 @@ class SortedSBMLAnnotation(object):
 
     Returns
     -------
-    annotation_dict: dict {dict: {resource:identifier}}
-        Nested dictionary of annotations per object. 
+    annotation_dict_qualifier: dict qualifier: tuple
+        Dictionary of annotations per type.
     """
-    annotation_dict = dict.fromkeys(cn.KNOWLEDGE_TYPES_REP)
-    str_annotation_item = [ele for ele in self.raw_annotations.str_annotation \
-                           if ele.id==input_id][0]
-    str_annotation_tuples = self.getKnowledgeResourceTuple(str_annotation_item.annotation)
-    if str_annotation_tuples:
-      tup_keys = list(set([cn.KNOWLEDGE_TYPES_DCT[ele[0]] for ele in str_annotation_tuples]))
-      for one_key in tup_keys:
-        vals = [ele[1] for ele in str_annotation_tuples if cn.KNOWLEDGE_TYPES_DCT[ele[0]]==one_key]
-        annotation_dict[one_key] = vals
     
-    # extra formatting for sbo
-    def getSBOForm(inp_sbo):
-      """
-      Reformat an SBO term into str.
-      Return None if -1 (not provided).
-
-      Parameters
-      ----------
-      inp_sbo: int
-
-      Returns
-      -------
-      res_sbo: str/None
-          Return None if sbo term is -1 
-          (i.e.,  not provided)
-      """
-      m = re.search('[0-9]+', inp_sbo)
-      if m:
-        res_sbo = 'SBO:' + inp_sbo[m.start():m.end()]
-        return res_sbo
-      else:
-        return None
-      
-    if annotation_dict['sbo']:
-      annotation_dict['sbo'] = [getSBOForm(ele) for ele in annotation_dict['sbo']]
-
-    # get sbo term from .sbo_term
-    sbo_item = [ele for ele in self.raw_annotations.sbo \
+    str_annotation_item = [ele for ele in self.raw_annotation.str_annotation \
+                           if ele.id==input_id][0]
+    annotation_dict_qualifier = {type_k:self.getKnowledgeResourceTuple(str_annotation_item.annotation[type_k]) \
+                                 for type_k in str_annotation_item.annotation.keys()}
+    # add SBO case
+    sbo_item = [ele for ele in self.raw_annotation.sbo \
                 if ele.id==input_id][0]
     if sbo_item.annotation:
-      # check if sbo term is also given as string
-      if annotation_dict['sbo']:
-        annotation_dict['sbo'] = annotation_dict['sbo'].append(sbo_item.annotation)
+      if 'is' in annotation_dict_qualifier.keys():
+        annotation_dict_qualifier['is'].append(('sbo', sbo_item.annotation)) 
       else:
-        annotation_dict['sbo'] = [sbo_item.annotation]
+        annotation_dict_qualifier['is'] = [('sbo', sbo_item.annotation)]
+    annotation_dict_qualifier['object_id'] = input_id
+    annotation_dict_qualifier['object_type'] = str_annotation_item.object_type
+    return annotation_dict_qualifier
+
+  def getAnnotationDictByOntology(self, qualifier_dict):
+    """
+    Get dictionary of annotations for an object,
+    for given knowledge resource type. 
+
+    Parameters
+    ----------
+    qualifier_dict: dict
+        Dictionary of qualifier: annotation tuple
+
+    Returns
+    -------
+    qualifier_dict: dict ontology: tuple
+        Dictionary of annotations per ontology.
+    """
+    # collect all tuples for each qualifier
+    annotation_dict_ontology = dict.fromkeys(cn.KNOWLEDGE_TYPES_REP)
+    valid_dict_keys = [one_k for one_k in qualifier_dict.keys() \
+                       if one_k not in ['object_id', 'object_type']]
+    if valid_dict_keys:
+      all_tups = []
+      for one_k in valid_dict_keys:
+        all_tups = all_tups + qualifier_dict[one_k]
+        tup_keys = list(set([cn.KNOWLEDGE_TYPES_DCT[ele[0]] for ele in all_tups]))
+        for one_key in tup_keys:
+          vals = [ele[1] for ele in all_tups if cn.KNOWLEDGE_TYPES_DCT[ele[0]]==one_key]
+          annotation_dict_ontology[one_key] = vals
     # finally, add the object id and type
-    annotation_dict['object_id'] = input_id
-    annotation_dict['object_type'] = str_annotation_item.object_type
-    
-    return annotation_dict
+    annotation_dict_ontology['object_id'] = qualifier_dict['object_id']
+    annotation_dict_ontology['object_type'] = qualifier_dict['object_type']
+    #
+    return annotation_dict_ontology
 
   def getKnowledgeResourceTuple(self, input_annotation):
     """
@@ -255,15 +257,12 @@ class SortedSBMLAnnotation(object):
         Ontology - identifier tuple.
     """
     if input_annotation:
-      identifiers_list = re.findall('identifiers\.org/.*/', input_annotation)
+      identifiers_list = re.findall('identifiers\.org/.*/', ''.join(input_annotation))
       return [(r.split('/')[1],r.split('/')[2].replace('\"', '')) \
               for r in identifiers_list \
               if r.split('/')[1] in cn.ALL_KNOWLEDGE_TYPES]
     else:
       return None
-
-
-
 
 
 

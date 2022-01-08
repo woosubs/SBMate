@@ -16,7 +16,7 @@ class AnnotationMetrics(object):
 
   Attributes
   ----------
-  annotations: sbml_annotation.SortedSBMLAnnotation
+  annotations: sbml_annotation.SBMLAnnotation
       Sorted annotations for each knowledge resource.
   calculatorDf: dataframe of metrics.
   """
@@ -34,7 +34,7 @@ class AnnotationMetrics(object):
       self.annotations = None
       self.metrics_df = None
     else:
-      self.annotations = sa.SortedSBMLAnnotation(file=model_file)
+      self.annotations = sa.SBMLAnnotation(file=model_file)
       if metric_calculator_classes is None:
         metric_calculator_classes = []
       metric_calculator_classes.append(MetricCalculator)
