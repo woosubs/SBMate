@@ -19,7 +19,7 @@ RESULT_REPORT_ENTRIES = [
     "coverage: 1.0",
     "consistent_elements: 19",
     "consistency: 0.9",
-    "specificity: 0.88",
+    "specificity: 0.7",
     BIOMD_12,
     ]
 IGNORE_TEST = False
@@ -48,15 +48,15 @@ class TestAnnotatinoMetrics(unittest.TestCase):
     if IGNORE_TEST:
         return
     df = self.annotation_metrics.metrics_df
-    self.assertEqual(self.no_annotations.metrics_df, None)
+    self.assertEqual(self.no_annotation_metrics.annotations, None)
     self.assertEqual(self.no_annotation_metrics.metrics_df, None)
 
   def testTwoClasses(self):
     if IGNORE_TEST:
       return
-    annotation_metrics = sbmate.AnnotationMetrics(MODEL_FILE,
+    one_annotation_metrics = sbmate.AnnotationMetrics(MODEL_FILE,
         metric_calculator_classes=[MetricCalculator])
-    df = annotation_metrics.metrics_df
+    df = one_annotation_metrics.metrics_df
     lst = df.columns.tolist()
     for name in METRIC_NAMES:
       self.assertEqual(lst.count(name), 2)
@@ -69,7 +69,7 @@ class TestAnnotatinoMetrics(unittest.TestCase):
     self.assertEqual(float(df['coverage']), 1.0)
     self.assertEqual(int(df['consistent_elements']), 19)
     self.assertEqual(float(df['consistency']), 0.95)
-    self.assertEqual(float(df['specificity']), 0.88)
+    self.assertEqual(float(df['specificity']), 0.7)
 
   def testInit(self):
     if IGNORE_TEST:
@@ -91,16 +91,16 @@ class TestAnnotatinoMetrics(unittest.TestCase):
     self.assertEqual(float(res_df['coverage']), 1.0)
     self.assertEqual(int(res_df['consistent_elements']), 19)
     self.assertEqual(float(res_df['consistency']), 0.95)
-    self.assertEqual(float(res_df['specificity']), 0.88) 
+    self.assertEqual(float(res_df['specificity']), 0.7) 
 
     res_df2 = self.annotation_metrics.getMetrics([MODEL_FILE, MODEL_FILE2], 
                                                   output="table")
     self.assertEqual(res_df2.shape, (2,6))
     self.assertEqual(list(res_df2.columns), METRIC_NAMES)
     self.assertEqual(list(res_df2.loc[BIOMD_12,:]),
-                     [20, 20, 1.0, 19, 0.95, 0.88])
+                     [20, 20, 1.0, 19, 0.95, 0.7])
     self.assertEqual(list(res_df2.loc[BIOMD_13,:]),
-                     [51, 51, 1.0, 51, 1.00, 0.99])
+                     [51, 51, 1.0, 51, 1.00, 0.93])
     
     res_report =  self.annotation_metrics.getMetrics(MODEL_FILE,
         output="report")
@@ -137,7 +137,7 @@ class TestAnnotatinoMetrics(unittest.TestCase):
     self.assertEqual(float(df['coverage']), 1.0)
     self.assertEqual(int(df['consistent_elements']), 19)
     self.assertEqual(float(df['consistency']), 0.95)
-    self.assertEqual(float(df['specificity']), 0.88)
+    self.assertEqual(float(df['specificity']), 0.7)
 
 
 if __name__ == '__main__':
